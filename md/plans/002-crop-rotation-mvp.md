@@ -1,9 +1,9 @@
 # 002 — Crop rotation planner MVP
 
-- Status: active (Phases 1–2 complete, pending review; Phase 3 next)
+- Status: active (Phases 1–2 merged; Phase 3 complete, pending review; Phase 4 next)
 - Updated: 2026-09-28
 - Branch / PR: `feat/phase1-backend-domain` ([PR #9](https://github.com/Niilop/cropcycle-app/pull/9)); `feat/phase2-layout` (stacked on it)
-- Related decisions: [D005–D014](../DECISIONS.md)
+- Related decisions: [D005–D015](../DECISIONS.md)
 - Source: [requirements v0](../requirements/mvp-v0.md)
 
 ## Goal
@@ -99,8 +99,8 @@ All private routes are authenticated and garden-owner scoped. They return 404 fo
 
 ### Mobile (`mobile/`, D005)
 
-- Stack: Expo SDK (latest stable), Expo Router with a tab layout (Garden, Plan, History, Settings), TanStack Query, and Zustand for the editor's selection and mode.
-- UI libraries: `react-native-svg` for the bed canvas; `react-native-gesture-handler` and `reanimated` for pan, zoom, drag, and resize; `@gorhom/bottom-sheet`; `expo-secure-store` for the token.
+- Stack: Expo SDK 57, Expo Router with a tab layout (Garden, Plan, History, Settings), TanStack Query, Zustand, `expo-secure-store`, `expo-localization`.
+- Built with a smaller footprint than first proposed (D015): a `View`-based canvas, `PanResponder` gestures, and a custom side or bottom panel instead of svg, gesture-handler, reanimated and bottom-sheet libraries.
 - API types are generated from FastAPI's OpenAPI schema with `openapi-typescript` (D010).
 - Interaction model (D011):
   - Tapping is the complete path: select a crop in the plan tray, see the beds colour-coded, then tap a bed to place it. Drag is an accelerator on top.
@@ -132,11 +132,19 @@ All private routes are authenticated and garden-owner scoped. They return 404 fo
   - Next year's draft plan reserves this autumn.
   - A 50-bed, 30-crop fixture runs in well under 2 s (0.37 s for two runs).
 
-### Phase 3 — Mobile foundation
+### Phase 3 — Mobile foundation (complete, pending review)
 
-- [ ] Scaffold the Expo app: lint and Prettier, generated API client, sign-in with secure-store persistence, and the tab shell.
-- [ ] Gardens list and create; the garden canvas with add, move, resize, rename, and archive for beds.
-- [ ] The bed sheet with a seasonal timeline, plus history add, edit, and delete; the History tab by garden and by bed.
+- [x] Expo SDK 57 app in `mobile/`:
+  - ESLint (React Compiler rules), Prettier, TypeScript 6;
+  - API types generated from OpenAPI (D010), with a staleness check;
+  - sign-in and registration with the session persisted in SecureStore (localStorage on web);
+  - a tab shell; English and Finnish texts.
+- [x] Gardens list and create. The garden canvas is drawn to scale:
+  - add, select and rename beds;
+  - in layout mode, drag to move and drag the corner to resize (0.1 m snap), with ± and typed fallbacks;
+  - remove (archive) with a second-tap confirmation.
+- [x] Bed panel: a season timeline for the selected year (cross-year windows clipped with markers), plus adding, editing and removing plantings (typical season or chosen months, including the previous autumn). History tab grouped by year, filterable by bed. Settings: language, garden, account, sign out, API address.
+- [x] Make targets `mobile` and `check-mobile`; `BACKEND_HOST` for phones on the network; a CI job (lint, format, types, unit, API types, Playwright); Dependabot for `/mobile` (no Expo, React or React Native minor or major bumps).
 
 ### Phase 4 — Planning flow
 
@@ -152,7 +160,14 @@ All private routes are authenticated and garden-owner scoped. They return 404 fo
 
 ## Questions and decisions
 
-Answered on 2026-09-28 (see [PROJECT.md](../PROJECT.md#product-answers-2026-09-28)): hosting stays open but scalable (D013), Finnish and English (D014), completing a plan writes history, and cross-year crops reserve the bed (D012). Still open: the hosting provider and distribution channel (Phase 5). For device testing on WSL2, use `npx expo start --tunnel` or WSL mirrored networking.
+Answered on 2026-09-28 (see [PROJECT.md](../PROJECT.md#product-answers-2026-09-28)): hosting stays open but scalable (D013), Finnish and English (D014), completing a plan writes history, and cross-year crops reserve the bed (D012). Still open: the hosting provider and distribution channel (Phase 5).
+
+Device testing on Windows/WSL2 (agreed approach):
+1. Expo web in the Windows browser, using the DevTools device toolbar for tablet and phone sizes and rotation.
+2. Android Studio emulator on Windows, running Expo Go at `exp://10.0.2.2:8081`, with the API at `10.0.2.2:8000`.
+3. Real devices with Expo Go and WSL mirrored networking (`--tunnel` as a fallback).
+
+The iOS simulator requires macOS, so use Expo Go on an iPhone or iPad. The app must read its API base URL from configuration, and CORS must allow the Expo web origin.
 
 ## Validation results
 
@@ -162,6 +177,12 @@ Answered on 2026-09-28 (see [PROJECT.md](../PROJECT.md#product-answers-2026-09-2
 | GitHub CI for Phase 1 (PR #9) | Pass: backend on 3.12 and 3.14 (including PostgreSQL 18 migration checks), frontend, `make smoke` via Docker and Nginx | Commit `7bf7f58`. The first run failed on the 3.12 annotation bug, which is fixed. |
 | Phase 2 `pytest` | 84 passed on Python 3.12 and 3.14 | 15 layout unit tests and 5 layout API tests added |
 | Phase 2 smoke spec, including suitability and **Fill remaining** | Pass | Embedded PostgreSQL 16 with uvicorn and the Vite proxy; CI will run it through Docker |
+| Phase 3 `make check-mobile` | Pass: lint, Prettier, `tsc`, 8 Node unit tests, API types current, 7 Playwright tests (tablet and phone; one drag test is tablet-only) | Fake API |
+| Phase 3 real-stack walkthrough (web build, API on embedded PostgreSQL 16) | Pass, with no console errors. Covered: register, create garden, 3 beds, potato, garlic with chosen months across years, previous-year view, drag, steppers, History, Finnish, reload keeps the session, phone sign-in and panel | Scratch script with screenshots reviewed; the layout was fixed so the phone panel no longer hides the beds |
+| Phase 3 `pytest` | 85 passed | Adds the OpenAPI snapshot test |
+| `expo-doctor` | 21/21 checks pass | `expo-font` added as the icon library's peer dependency |
+| `npm audit` (mobile) | 13 moderate, all transitive in Expo tooling (`xcode` → `uuid`) and Expo Router (`decode-uri-component`) | npm's suggested fix is a downgrade to Expo 46, which was not applied; waiting for Expo patch releases (Dependabot) |
+| Native devices | **Not run.** No emulator or phone available in this environment | Phase 5 manual check; `mobile/README.md` has the steps |
 | `ruff check .`, `ruff format --check .` | Pass | Phase 1 working tree |
 | `pytest` | 64 passed on Python 3.12 and 3.14 | SQLite; includes the migration chain 0001→0003, downgrade to base, and seed idempotence. The first CI run failed on a migration annotation that only Python 3.14 skips evaluating; it is fixed, and 3.12 now runs locally too. |
 | PostgreSQL migration checks | Pass: `upgrade 0002`, `upgrade head`, `alembic check` (no changes), seed ×2 (second run adds nothing), cascade and `SET NULL` behaviour, `downgrade base`, `upgrade head`, `alembic check` | Embedded **PostgreSQL 16** via `pgserver` in an isolated uv environment (no Docker or local server available). CI runs PostgreSQL 18. |
@@ -170,13 +191,15 @@ Answered on 2026-09-28 (see [PROJECT.md](../PROJECT.md#product-answers-2026-09-2
 
 ## Handoff / completion
 
-- Implemented: Phases 0–2. Phase 1 is in PR #9 (CI green). Phase 2 is on `feat/phase2-layout`, stacked on PR #9.
-- Remaining work or blockers: Phases 3–5 (the Expo app and hardening). There are no blockers.
-- Next concrete step: merge PR #9, open the Phase 2 PR, then scaffold `mobile/` (Phase 3). Scaffolding needs new npm dependencies (Expo SDK, Expo Router, TanStack Query, Zustand, react-native-svg, gesture-handler, reanimated, bottom-sheet, secure-store, openapi-typescript).
+- Implemented: Phases 0–2 merged; Phase 3 on `feat/phase3-mobile` (PR pending).
+- Remaining work or blockers: Phase 4 (planning screens) and Phase 5 (hardening, native device checks, retiring `frontend/`, EAS builds). There are no blockers.
+- Next concrete step: open the Phase 3 PR. Then build the Phase 4 Plan tab: plan per year, crop picker with quantities, suitability colouring on the canvas when a crop is selected, tap to place, and **Fill remaining**.
 - Deviations from the plan:
   - The garden canvas size was dropped; it is derived from the beds.
   - There is one plan per garden and year (D012).
   - `POST /plans/{id}/crops` upserts, and `DELETE /plans/{id}/crops/{crop_id}` is keyed by crop.
   - Completed plans are read-only until reopened.
-  - Scores are computed on read, with no stored columns or `evaluate` endpoint.
-  - The solver ranks layouts by crops placed before score and adds an insert-with-eviction step.
+  - Scores are computed on read.
+  - The solver ranks layouts by crops placed, then score, and has an insert step.
+  - The mobile app uses fewer UI libraries (D015).
+  - Tapping a bed always opens its panel; closing is explicit.

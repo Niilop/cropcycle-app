@@ -1,10 +1,19 @@
 # Implemented architecture
 
-This describes what exists now: the CropCycle backend from [plan 002](plans/002-crop-rotation-mvp.md) Phases 1–2 (domain, scoring and auto-layout), and the template's web frontend trimmed to a sign-in and gardens shell. The Expo app is planned (Phases 3–5).
+This describes what exists now:
+- the CropCycle backend from [plan 002](plans/002-crop-rotation-mvp.md) Phases 1–2 (domain, scoring and auto-layout);
+- the Expo app's foundation from Phase 3 (sign-in, gardens, bed layout, history);
+- the template's web frontend, trimmed to a sign-in and gardens shell until Phase 5.
+
+The planning screens are Phase 4.
 
 ## Components and request flow
 
 ```text
+Expo app (iOS / Android / web build)
+  -> fetch to http://<host>:8000 (EXPO_PUBLIC_API_URL or the host that served the app; CORS for web)
+  -> the same FastAPI routes
+
 Browser: React + TypeScript (temporary web shell)
   -> /api/* through Vite (development) or Nginx (Docker)
   -> FastAPI routes (proxy removes /api)
@@ -30,6 +39,11 @@ Development uses frontend port 5173 and backend port 8000. `make dev` checks set
 | [backend/seed/](../backend/seed/) | `catalog.json` (families, crops, rotation and companion rules in en/fi) and its validating, idempotent loader |
 | [backend/models/](../backend/models/) | SQLAlchemy models and Pydantic request/response schemas, including the `YearMonth` type |
 | [backend/alembic/](../backend/alembic/) | Versioned database changes; `0003_crop_domain` introduces the domain |
+| [mobile/src/app/](../mobile/src/app/) | Expo Router screens: sign-in/register, gardens, tabs (garden, plan placeholder, history, settings) |
+| [mobile/src/api/](../mobile/src/api/) | Fetch client with timeout and 401 handling, API address, generated OpenAPI types, TanStack Query hooks (optimistic bed updates) |
+| [mobile/src/garden/](../mobile/src/garden/) | Scaled garden canvas (tap; drag and resize in layout mode), bed panel, planting form, season timeline |
+| [mobile/src/auth/](../mobile/src/auth/), [mobile/src/state/](../mobile/src/state/) | Zustand stores: session (token and user in SecureStore, or localStorage on web), preferences (language, active garden), editor (year, selected bed, layout mode) |
+| [mobile/src/i18n/](../mobile/src/i18n/) | English and Finnish texts (key parity unit-tested); catalogue names chosen by locale |
 | [frontend/src/](../frontend/src/) | Web shell: overview, register/login, account, gardens list and create |
 | [tests/](../tests/) and [frontend/tests/](../frontend/tests/) | Backend tests (SQLite, real seed data) and mocked browser tests |
 | [frontend/e2e/](../frontend/e2e/) and [compose.smoke.yaml](../compose.smoke.yaml) | Real browser-to-database smoke test with a disposable, seeded PostgreSQL |
@@ -65,7 +79,7 @@ RotationRule ─> Crop xor CropFamily;  CompanionRule ─> (Crop a < Crop b)
   - Layouts are ranked by crops placed, then total score. Suggestions use the crop's default window, never clash in timing, and never repeat a crop in a bed within the year.
   - Demand that can't be placed is returned as `unplaced`.
 - **Suitability** (`GET /plans/{id}/suitability?crop_id=`) assesses a new placement of the crop in every active bed, given the current plan. Plan details carry a fresh `assessment` for each placement in an active bed.
-- Registration hashes passwords with Argon2. Login returns an HS256 JWT, valid for 30 days by default (D006). The web shell keeps it in memory; the mobile app will use secure storage.
+- Registration hashes passwords with Argon2. Login returns an HS256 JWT, valid for 30 days by default (D006). The web shell keeps it in memory. The mobile app stores the token and user in SecureStore (localStorage on its web build), opens signed-in from storage, confirms with `/auth/me` in the background, and signs out on any 401.
 
 ## Persistence and contracts
 
@@ -77,3 +91,5 @@ RotationRule ─> Crop xor CropFamily;  CompanionRule ─> (Crop a < Crop b)
 - Persistent refresh tokens, revocation, password reset and closing self-registration are not implemented.
 - `/health` checks process liveness; `/ready` checks a database query, not migration or seed status.
 - Browser tests mock the API. The smoke test covers the real stack through Nginx but is not exhaustive.
+- The mobile app needs a network connection: there is no offline editing, and TanStack Query's cache is in memory only.
+- The mobile app's tests cover its web build (Playwright). Native behaviour, such as gestures on real devices and SecureStore, still needs manual checks on the emulator or a device (Phase 5).

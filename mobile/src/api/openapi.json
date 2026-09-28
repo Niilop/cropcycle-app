@@ -1,0 +1,2860 @@
+{
+  "components": {
+    "schemas": {
+      "AssessmentResponse": {
+        "description": "Suitability as a 0–100 score, a band and stable reason codes (translated by clients).",
+        "properties": {
+          "band": {
+            "title": "Band",
+            "type": "string"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Reasons",
+            "type": "array"
+          },
+          "score": {
+            "title": "Score",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "score",
+          "band",
+          "reasons"
+        ],
+        "title": "AssessmentResponse",
+        "type": "object"
+      },
+      "BedResponse": {
+        "properties": {
+          "archived_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Archived At"
+          },
+          "garden_id": {
+            "title": "Garden Id",
+            "type": "integer"
+          },
+          "height": {
+            "title": "Height",
+            "type": "number"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "width": {
+            "title": "Width",
+            "type": "number"
+          },
+          "x": {
+            "title": "X",
+            "type": "number"
+          },
+          "y": {
+            "title": "Y",
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "garden_id",
+          "name",
+          "x",
+          "y",
+          "width",
+          "height",
+          "archived_at"
+        ],
+        "title": "BedResponse",
+        "type": "object"
+      },
+      "BedSuitabilityResponse": {
+        "properties": {
+          "assessment": {
+            "$ref": "#/components/schemas/AssessmentResponse"
+          },
+          "bed_id": {
+            "title": "Bed Id",
+            "type": "integer"
+          },
+          "end_month": {
+            "examples": [
+              "2026-05"
+            ],
+            "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+            "title": "End Month",
+            "type": "string"
+          },
+          "start_month": {
+            "examples": [
+              "2026-05"
+            ],
+            "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+            "title": "Start Month",
+            "type": "string"
+          }
+        },
+        "required": [
+          "bed_id",
+          "start_month",
+          "end_month",
+          "assessment"
+        ],
+        "title": "BedSuitabilityResponse",
+        "type": "object"
+      },
+      "BedWrite": {
+        "additionalProperties": false,
+        "properties": {
+          "height": {
+            "exclusiveMinimum": 0.0,
+            "maximum": 1000.0,
+            "title": "Height",
+            "type": "number"
+          },
+          "name": {
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "width": {
+            "exclusiveMinimum": 0.0,
+            "maximum": 1000.0,
+            "title": "Width",
+            "type": "number"
+          },
+          "x": {
+            "maximum": 1000.0,
+            "minimum": -1000.0,
+            "title": "X",
+            "type": "number"
+          },
+          "y": {
+            "maximum": 1000.0,
+            "minimum": -1000.0,
+            "title": "Y",
+            "type": "number"
+          }
+        },
+        "required": [
+          "name",
+          "x",
+          "y",
+          "width",
+          "height"
+        ],
+        "title": "BedWrite",
+        "type": "object"
+      },
+      "Body_login_auth_login_post": {
+        "properties": {
+          "client_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Id"
+          },
+          "client_secret": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "format": "password",
+            "title": "Client Secret"
+          },
+          "grant_type": {
+            "anyOf": [
+              {
+                "pattern": "^password$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grant Type"
+          },
+          "password": {
+            "format": "password",
+            "title": "Password",
+            "type": "string"
+          },
+          "scope": {
+            "default": "",
+            "title": "Scope",
+            "type": "string"
+          },
+          "username": {
+            "title": "Username",
+            "type": "string"
+          }
+        },
+        "required": [
+          "username",
+          "password"
+        ],
+        "title": "Body_login_auth_login_post",
+        "type": "object"
+      },
+      "CompanionRuleResponse": {
+        "properties": {
+          "compatibility": {
+            "$ref": "#/components/schemas/Compatibility"
+          },
+          "crop_a_id": {
+            "title": "Crop A Id",
+            "type": "integer"
+          },
+          "crop_b_id": {
+            "title": "Crop B Id",
+            "type": "integer"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "weight": {
+            "title": "Weight",
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "crop_a_id",
+          "crop_b_id",
+          "compatibility",
+          "weight"
+        ],
+        "title": "CompanionRuleResponse",
+        "type": "object"
+      },
+      "Compatibility": {
+        "enum": [
+          "positive",
+          "neutral",
+          "negative"
+        ],
+        "title": "Compatibility",
+        "type": "string"
+      },
+      "CropFamilyResponse": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "names": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Names",
+            "type": "object"
+          },
+          "slug": {
+            "title": "Slug",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "slug",
+          "names"
+        ],
+        "title": "CropFamilyResponse",
+        "type": "object"
+      },
+      "CropResponse": {
+        "properties": {
+          "default_end_month": {
+            "title": "Default End Month",
+            "type": "integer"
+          },
+          "default_start_month": {
+            "title": "Default Start Month",
+            "type": "integer"
+          },
+          "default_start_year_offset": {
+            "title": "Default Start Year Offset",
+            "type": "integer"
+          },
+          "family_id": {
+            "title": "Family Id",
+            "type": "integer"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "names": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Names",
+            "type": "object"
+          },
+          "slug": {
+            "title": "Slug",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "slug",
+          "names",
+          "family_id",
+          "default_start_month",
+          "default_end_month",
+          "default_start_year_offset"
+        ],
+        "title": "CropResponse",
+        "type": "object"
+      },
+      "GardenDetailResponse": {
+        "properties": {
+          "beds": {
+            "items": {
+              "$ref": "#/components/schemas/BedResponse"
+            },
+            "title": "Beds",
+            "type": "array"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "created_at",
+          "updated_at",
+          "beds"
+        ],
+        "title": "GardenDetailResponse",
+        "type": "object"
+      },
+      "GardenResponse": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "GardenResponse",
+        "type": "object"
+      },
+      "GardenWrite": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "GardenWrite",
+        "type": "object"
+      },
+      "GenerateLayoutResponse": {
+        "properties": {
+          "plan": {
+            "$ref": "#/components/schemas/PlanDetailResponse"
+          },
+          "unplaced": {
+            "items": {
+              "$ref": "#/components/schemas/UnplacedResponse"
+            },
+            "title": "Unplaced",
+            "type": "array"
+          }
+        },
+        "required": [
+          "plan",
+          "unplaced"
+        ],
+        "title": "GenerateLayoutResponse",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "PlacementResponse": {
+        "properties": {
+          "assessment": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AssessmentResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "bed_id": {
+            "title": "Bed Id",
+            "type": "integer"
+          },
+          "crop_id": {
+            "title": "Crop Id",
+            "type": "integer"
+          },
+          "end_month": {
+            "examples": [
+              "2026-05"
+            ],
+            "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+            "title": "End Month",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "locked": {
+            "title": "Locked",
+            "type": "boolean"
+          },
+          "plan_id": {
+            "title": "Plan Id",
+            "type": "integer"
+          },
+          "source": {
+            "$ref": "#/components/schemas/PlacementSource"
+          },
+          "start_month": {
+            "examples": [
+              "2026-05"
+            ],
+            "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+            "title": "Start Month",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "plan_id",
+          "bed_id",
+          "crop_id",
+          "start_month",
+          "end_month",
+          "locked",
+          "source"
+        ],
+        "title": "PlacementResponse",
+        "type": "object"
+      },
+      "PlacementSource": {
+        "enum": [
+          "manual",
+          "suggested"
+        ],
+        "title": "PlacementSource",
+        "type": "string"
+      },
+      "PlacementWrite": {
+        "additionalProperties": false,
+        "properties": {
+          "bed_id": {
+            "exclusiveMinimum": 0.0,
+            "title": "Bed Id",
+            "type": "integer"
+          },
+          "crop_id": {
+            "exclusiveMinimum": 0.0,
+            "title": "Crop Id",
+            "type": "integer"
+          },
+          "end_month": {
+            "anyOf": [
+              {
+                "examples": [
+                  "2026-05"
+                ],
+                "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Month"
+          },
+          "locked": {
+            "default": true,
+            "title": "Locked",
+            "type": "boolean"
+          },
+          "start_month": {
+            "anyOf": [
+              {
+                "examples": [
+                  "2026-05"
+                ],
+                "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Month"
+          }
+        },
+        "required": [
+          "bed_id",
+          "crop_id"
+        ],
+        "title": "PlacementWrite",
+        "type": "object"
+      },
+      "PlanCreate": {
+        "additionalProperties": false,
+        "properties": {
+          "garden_id": {
+            "exclusiveMinimum": 0.0,
+            "title": "Garden Id",
+            "type": "integer"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "year": {
+            "maximum": 2200.0,
+            "minimum": 1900.0,
+            "title": "Year",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "garden_id",
+          "year"
+        ],
+        "title": "PlanCreate",
+        "type": "object"
+      },
+      "PlanDetailResponse": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "crops": {
+            "items": {
+              "$ref": "#/components/schemas/PlannedCropResponse"
+            },
+            "title": "Crops",
+            "type": "array"
+          },
+          "garden_id": {
+            "title": "Garden Id",
+            "type": "integer"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "placements": {
+            "items": {
+              "$ref": "#/components/schemas/PlacementResponse"
+            },
+            "title": "Placements",
+            "type": "array"
+          },
+          "status": {
+            "$ref": "#/components/schemas/PlanStatus"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "year": {
+            "title": "Year",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "garden_id",
+          "year",
+          "name",
+          "status",
+          "created_at",
+          "updated_at",
+          "crops",
+          "placements"
+        ],
+        "title": "PlanDetailResponse",
+        "type": "object"
+      },
+      "PlanResponse": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "garden_id": {
+            "title": "Garden Id",
+            "type": "integer"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/PlanStatus"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "year": {
+            "title": "Year",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "garden_id",
+          "year",
+          "name",
+          "status",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "PlanResponse",
+        "type": "object"
+      },
+      "PlanStatus": {
+        "enum": [
+          "draft",
+          "completed"
+        ],
+        "title": "PlanStatus",
+        "type": "string"
+      },
+      "PlanUpdate": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "PlanUpdate",
+        "type": "object"
+      },
+      "PlannedCropResponse": {
+        "properties": {
+          "crop_id": {
+            "title": "Crop Id",
+            "type": "integer"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "placed": {
+            "default": 0,
+            "title": "Placed",
+            "type": "integer"
+          },
+          "quantity": {
+            "title": "Quantity",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "crop_id",
+          "quantity"
+        ],
+        "title": "PlannedCropResponse",
+        "type": "object"
+      },
+      "PlannedCropWrite": {
+        "additionalProperties": false,
+        "properties": {
+          "crop_id": {
+            "exclusiveMinimum": 0.0,
+            "title": "Crop Id",
+            "type": "integer"
+          },
+          "quantity": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Quantity",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "crop_id",
+          "quantity"
+        ],
+        "title": "PlannedCropWrite",
+        "type": "object"
+      },
+      "PlantingResponse": {
+        "properties": {
+          "bed_id": {
+            "title": "Bed Id",
+            "type": "integer"
+          },
+          "coverage": {
+            "title": "Coverage",
+            "type": "number"
+          },
+          "crop_id": {
+            "title": "Crop Id",
+            "type": "integer"
+          },
+          "end_month": {
+            "examples": [
+              "2026-05"
+            ],
+            "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+            "title": "End Month",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "plan_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Id"
+          },
+          "start_month": {
+            "examples": [
+              "2026-05"
+            ],
+            "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+            "title": "Start Month",
+            "type": "string"
+          },
+          "year": {
+            "title": "Year",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "bed_id",
+          "crop_id",
+          "year",
+          "start_month",
+          "end_month",
+          "coverage",
+          "plan_id"
+        ],
+        "title": "PlantingResponse",
+        "type": "object"
+      },
+      "PlantingWrite": {
+        "additionalProperties": false,
+        "properties": {
+          "crop_id": {
+            "exclusiveMinimum": 0.0,
+            "title": "Crop Id",
+            "type": "integer"
+          },
+          "end_month": {
+            "anyOf": [
+              {
+                "examples": [
+                  "2026-05"
+                ],
+                "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Month"
+          },
+          "start_month": {
+            "anyOf": [
+              {
+                "examples": [
+                  "2026-05"
+                ],
+                "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Month"
+          },
+          "year": {
+            "maximum": 2200.0,
+            "minimum": 1900.0,
+            "title": "Year",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "crop_id",
+          "year"
+        ],
+        "title": "PlantingWrite",
+        "type": "object"
+      },
+      "RotationRuleResponse": {
+        "properties": {
+          "crop_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Crop Id"
+          },
+          "family_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Family Id"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "preferred_gap_years": {
+            "title": "Preferred Gap Years",
+            "type": "integer"
+          },
+          "weight": {
+            "title": "Weight",
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "crop_id",
+          "family_id",
+          "preferred_gap_years",
+          "weight"
+        ],
+        "title": "RotationRuleResponse",
+        "type": "object"
+      },
+      "Token": {
+        "properties": {
+          "access_token": {
+            "title": "Access Token",
+            "type": "string"
+          },
+          "token_type": {
+            "default": "bearer",
+            "title": "Token Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "access_token"
+        ],
+        "title": "Token",
+        "type": "object"
+      },
+      "UnplacedResponse": {
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "crop_id": {
+            "title": "Crop Id",
+            "type": "integer"
+          },
+          "reason": {
+            "default": "no_free_season",
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "crop_id",
+          "count"
+        ],
+        "title": "UnplacedResponse",
+        "type": "object"
+      },
+      "UserCreate": {
+        "properties": {
+          "email": {
+            "format": "email",
+            "maxLength": 255,
+            "title": "Email",
+            "type": "string"
+          },
+          "password": {
+            "maxLength": 128,
+            "minLength": 12,
+            "title": "Password",
+            "type": "string"
+          },
+          "username": {
+            "maxLength": 100,
+            "minLength": 3,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Username",
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "username",
+          "password"
+        ],
+        "title": "UserCreate",
+        "type": "object"
+      },
+      "UserResponse": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "settings": {
+            "additionalProperties": true,
+            "title": "Settings",
+            "type": "object"
+          },
+          "username": {
+            "title": "Username",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "username",
+          "created_at",
+          "settings"
+        ],
+        "title": "UserResponse",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "OAuth2PasswordBearer": {
+        "flows": {
+          "password": {
+            "scopes": {},
+            "tokenUrl": "/auth/login"
+          }
+        },
+        "type": "oauth2"
+      }
+    }
+  },
+  "info": {
+    "title": "CropCycle API",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Root  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Root"
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "login_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_login_auth_login_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Token"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Login",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "operationId": "get_current_user_auth_me_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Get Current User",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "operationId": "register_auth_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Register",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/beds/{bed_id}": {
+      "delete": {
+        "operationId": "archive_bed_beds__bed_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "bed_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Bed Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Archive Bed",
+        "tags": [
+          "Gardens"
+        ]
+      },
+      "put": {
+        "operationId": "update_bed_beds__bed_id__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "bed_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Bed Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BedWrite"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BedResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Update Bed",
+        "tags": [
+          "Gardens"
+        ]
+      }
+    },
+    "/beds/{bed_id}/plantings": {
+      "get": {
+        "operationId": "list_bed_plantings_beds__bed_id__plantings_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "bed_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Bed Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PlantingResponse"
+                  },
+                  "title": "Response List Bed Plantings Beds  Bed Id  Plantings Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "List Bed Plantings",
+        "tags": [
+          "Gardens"
+        ]
+      },
+      "post": {
+        "operationId": "create_planting_beds__bed_id__plantings_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "bed_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Bed Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlantingWrite"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlantingResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Create Planting",
+        "tags": [
+          "Gardens"
+        ]
+      }
+    },
+    "/beds/{bed_id}/restore": {
+      "post": {
+        "operationId": "restore_bed_beds__bed_id__restore_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "bed_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Bed Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BedResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Restore Bed",
+        "tags": [
+          "Gardens"
+        ]
+      }
+    },
+    "/companion-rules": {
+      "get": {
+        "operationId": "list_companion_rules_companion_rules_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CompanionRuleResponse"
+                  },
+                  "title": "Response List Companion Rules Companion Rules Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "List Companion Rules",
+        "tags": [
+          "Catalogue"
+        ]
+      }
+    },
+    "/crop-families": {
+      "get": {
+        "operationId": "list_families_crop_families_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CropFamilyResponse"
+                  },
+                  "title": "Response List Families Crop Families Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "List Families",
+        "tags": [
+          "Catalogue"
+        ]
+      }
+    },
+    "/crops": {
+      "get": {
+        "operationId": "list_crops_crops_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CropResponse"
+                  },
+                  "title": "Response List Crops Crops Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "List Crops",
+        "tags": [
+          "Catalogue"
+        ]
+      }
+    },
+    "/gardens": {
+      "get": {
+        "operationId": "list_gardens_gardens_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/GardenResponse"
+                  },
+                  "title": "Response List Gardens Gardens Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "List Gardens",
+        "tags": [
+          "Gardens"
+        ]
+      },
+      "post": {
+        "operationId": "create_garden_gardens_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GardenWrite"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GardenResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Create Garden",
+        "tags": [
+          "Gardens"
+        ]
+      }
+    },
+    "/gardens/{garden_id}": {
+      "delete": {
+        "operationId": "delete_garden_gardens__garden_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "garden_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Garden Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Delete Garden",
+        "tags": [
+          "Gardens"
+        ]
+      },
+      "get": {
+        "operationId": "read_garden_gardens__garden_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "garden_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Garden Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "include_archived",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Include Archived",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GardenDetailResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Read Garden",
+        "tags": [
+          "Gardens"
+        ]
+      },
+      "put": {
+        "operationId": "update_garden_gardens__garden_id__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "garden_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Garden Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GardenWrite"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GardenResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Update Garden",
+        "tags": [
+          "Gardens"
+        ]
+      }
+    },
+    "/gardens/{garden_id}/beds": {
+      "post": {
+        "operationId": "create_bed_gardens__garden_id__beds_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "garden_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Garden Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BedWrite"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BedResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Create Bed",
+        "tags": [
+          "Gardens"
+        ]
+      }
+    },
+    "/gardens/{garden_id}/plantings": {
+      "get": {
+        "operationId": "list_garden_plantings_gardens__garden_id__plantings_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "garden_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Garden Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "year_from",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 2200,
+                  "minimum": 1900,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Year From"
+            }
+          },
+          {
+            "in": "query",
+            "name": "year_to",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 2200,
+                  "minimum": 1900,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Year To"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PlantingResponse"
+                  },
+                  "title": "Response List Garden Plantings Gardens  Garden Id  Plantings Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "List Garden Plantings",
+        "tags": [
+          "Gardens"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Health Health Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health",
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/plan-placements/{placement_id}": {
+      "delete": {
+        "operationId": "delete_placement_plan_placements__placement_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "placement_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Placement Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Delete Placement",
+        "tags": [
+          "Plans"
+        ]
+      },
+      "put": {
+        "operationId": "update_placement_plan_placements__placement_id__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "placement_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Placement Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlacementWrite"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlacementResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Update Placement",
+        "tags": [
+          "Plans"
+        ]
+      }
+    },
+    "/plans": {
+      "get": {
+        "operationId": "list_plans_plans_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "garden_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Garden Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PlanResponse"
+                  },
+                  "title": "Response List Plans Plans Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "List Plans",
+        "tags": [
+          "Plans"
+        ]
+      },
+      "post": {
+        "operationId": "create_plan_plans_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanDetailResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Create Plan",
+        "tags": [
+          "Plans"
+        ]
+      }
+    },
+    "/plans/{plan_id}": {
+      "delete": {
+        "operationId": "delete_plan_plans__plan_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "plan_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Plan Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Delete Plan",
+        "tags": [
+          "Plans"
+        ]
+      },
+      "get": {
+        "operationId": "read_plan_plans__plan_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "plan_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Plan Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanDetailResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Read Plan",
+        "tags": [
+          "Plans"
+        ]
+      },
+      "put": {
+        "operationId": "update_plan_plans__plan_id__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "plan_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Plan Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanDetailResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Update Plan",
+        "tags": [
+          "Plans"
+        ]
+      }
+    },
+    "/plans/{plan_id}/complete": {
+      "post": {
+        "operationId": "complete_plan_plans__plan_id__complete_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "plan_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Plan Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanDetailResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Complete Plan",
+        "tags": [
+          "Plans"
+        ]
+      }
+    },
+    "/plans/{plan_id}/crops": {
+      "post": {
+        "description": "Add a crop to the plan, or change its quantity if it is already requested.",
+        "operationId": "set_planned_crop_plans__plan_id__crops_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "plan_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Plan Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlannedCropWrite"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanDetailResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Set Planned Crop",
+        "tags": [
+          "Plans"
+        ]
+      }
+    },
+    "/plans/{plan_id}/crops/{crop_id}": {
+      "delete": {
+        "operationId": "remove_planned_crop_plans__plan_id__crops__crop_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "crop_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Crop Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "plan_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Plan Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Remove Planned Crop",
+        "tags": [
+          "Plans"
+        ]
+      }
+    },
+    "/plans/{plan_id}/generate-layout": {
+      "post": {
+        "description": "Fill remaining requested crops. Replaces only unlocked suggestions; manual and locked\nplacements never change. Crops without a free bed are reported in `unplaced`.",
+        "operationId": "generate_layout_plans__plan_id__generate_layout_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "plan_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Plan Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateLayoutResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Generate Layout",
+        "tags": [
+          "Plans"
+        ]
+      }
+    },
+    "/plans/{plan_id}/placements": {
+      "post": {
+        "operationId": "create_placement_plans__plan_id__placements_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "plan_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Plan Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlacementWrite"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlacementResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Create Placement",
+        "tags": [
+          "Plans"
+        ]
+      }
+    },
+    "/plans/{plan_id}/reopen": {
+      "post": {
+        "operationId": "reopen_plan_plans__plan_id__reopen_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "plan_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Plan Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanDetailResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Reopen Plan",
+        "tags": [
+          "Plans"
+        ]
+      }
+    },
+    "/plans/{plan_id}/suitability": {
+      "get": {
+        "description": "How well the crop would fit each active bed, for colour-coding while placing it.",
+        "operationId": "read_suitability_plans__plan_id__suitability_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "plan_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Plan Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "crop_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Crop Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/BedSuitabilityResponse"
+                  },
+                  "title": "Response Read Suitability Plans  Plan Id  Suitability Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Read Suitability",
+        "tags": [
+          "Plans"
+        ]
+      }
+    },
+    "/plantings/{planting_id}": {
+      "delete": {
+        "operationId": "delete_planting_plantings__planting_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "planting_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Planting Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Delete Planting",
+        "tags": [
+          "Gardens"
+        ]
+      },
+      "put": {
+        "operationId": "update_planting_plantings__planting_id__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "planting_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Planting Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlantingWrite"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlantingResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "Update Planting",
+        "tags": [
+          "Gardens"
+        ]
+      }
+    },
+    "/ready": {
+      "get": {
+        "operationId": "ready_ready_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Ready Ready Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Ready",
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/rotation-rules": {
+      "get": {
+        "operationId": "list_rotation_rules_rotation_rules_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/RotationRuleResponse"
+                  },
+                  "title": "Response List Rotation Rules Rotation Rules Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "summary": "List Rotation Rules",
+        "tags": [
+          "Catalogue"
+        ]
+      }
+    }
+  }
+}

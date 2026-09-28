@@ -1,6 +1,6 @@
 # CropCycle
 
-A mobile-first crop rotation planner. Gardeners draw their beds, record what grew where, list next season's crops, place the ones they care about, and let the app suggest the rest. The backend is FastAPI with PostgreSQL. Python 3.12+ dependencies use uv; the web frontend uses Node 24 and npm. The Expo mobile app is planned in [plan 002](md/plans/002-crop-rotation-mvp.md).
+A mobile-first crop rotation planner. Gardeners draw their beds, record what grew where, list next season's crops, place the ones they care about, and let the app suggest the rest. The backend is FastAPI with PostgreSQL. Python 3.12+ dependencies use uv; the apps use Node 24 and npm. The main client is the Expo app in [mobile/](mobile/README.md) (iOS, Android and web); see its README for running it in a browser, emulator or phone.
 
 Implemented so far:
 
@@ -9,7 +9,8 @@ Implemented so far:
 - Owner-scoped gardens with rectangular beds (archived rather than deleted), planting history, and yearly plans with requested crops, locked manual placements, and completion into history.
 - Year-month planting windows that can cross the new year, for example garlic from October to July.
 - Rate limits on registration, login and writes; liveness and readiness endpoints; configurable CORS; automated tests.
-- A minimal web frontend (sign-in and gardens) kept until the Expo app replaces it.
+- The Expo app (Finnish and English): sign-in that persists on the device; gardens drawn to scale with beds you can move, resize, rename and remove; planting history per bed with a season timeline; and a history view. Planning screens follow in Phase 4.
+- A minimal web frontend (sign-in and gardens) kept until Phase 5 retires it.
 
 - Rotation, family, neighbour and timing scoring with gentle suitability bands and reason codes; **Fill remaining** optimizes the whole plan around locked choices.
 
@@ -37,16 +38,17 @@ make dev
 
 Open <http://localhost:5173> for the UI and <http://127.0.0.1:8000/docs> for the API. Registration requires a password of 12–128 characters and a username of 3–100 letters, digits, dots, underscores, or hyphens. Login uses form fields `username` and `password`; `username` can contain either the username or email.
 
-If another project uses the default ports, run `make dev BACKEND_PORT=18000 FRONTEND_PORT=15173`; the proxy follows the backend port. To run servers separately, use `make backend` and `make frontend` in separate terminals. All commands are listed by `make help`:
+If another project uses the default ports, run `make dev BACKEND_PORT=18000 FRONTEND_PORT=15173`; the proxy follows the backend port. To test the Expo app on a phone, run `make dev BACKEND_HOST=0.0.0.0` so devices on your network can reach the API (see [mobile/README.md](mobile/README.md)). To run servers separately, use `make backend` and `make frontend` in separate terminals. All commands are listed by `make help`:
 
 | Command | Purpose |
 | --- | --- |
 | `make setup` | Install locked dependencies and safely initialize `.env` |
 | `make dev` | Start and stop both local servers together |
+| `make mobile` | Start the Expo app (press `w` for the browser) |
 | `make migrate` | Apply migrations to the configured database |
 | `make seed` | Load or update the crop catalogue (idempotent) |
 | `make check` | Backend checks plus frontend lint, formatting, build, and mocked browser tests |
-| `make check-backend` / `make check-frontend` | Run checks for one side |
+| `make check-backend` / `make check-frontend` / `make check-mobile` | Run checks for one part |
 | `make smoke` | Test the real full stack in disposable Docker containers |
 
 Without Make, the underlying commands are:
@@ -73,7 +75,7 @@ The backend reads the repository-root `.env` regardless of the working directory
 | `SECRET_KEY` | Required; random secret of at least 32 bytes |
 | `DEBUG` | `false` |
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | `43200` (30 days) |
-| `CORS_ORIGINS` | Empty; explicit comma-separated URLs or a JSON array |
+| `CORS_ORIGINS` | `http://localhost:8081` in `.env.example` (the Expo web app); explicit comma-separated URLs or a JSON array |
 
 JWT signing uses HS256. Keep `.env` out of Git. Existing `postgresql://` URLs are normalized to use psycopg 3. URL-encode special characters in database credentials.
 
@@ -135,6 +137,7 @@ backend/
   seed/            Crop catalogue data (catalog.json) and its idempotent loader
   alembic/         Schema migrations
   main.py          App factory and health endpoints
+mobile/            Expo app (routes in src/app, see mobile/README.md)
 frontend/src/      React pages, routing, session state, and API client
 frontend/tests/    Desktop and mobile browser tests
 frontend/e2e/      Real full-stack smoke test and browser runner image
