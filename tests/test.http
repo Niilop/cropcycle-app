@@ -1,6 +1,9 @@
 @baseUrl = http://127.0.0.1:8000
 @token = paste-token-here
-@itemId = 1
+@gardenId = 1
+@bedId = 1
+@planId = 1
+@cropId = 1
 
 ### Register
 POST {{baseUrl}}/auth/register
@@ -18,43 +21,66 @@ username=developer&password=example-password-123
 GET {{baseUrl}}/auth/me
 Authorization: Bearer {{token}}
 
-### Example
-POST {{baseUrl}}/example/
-Content-Type: application/json
+### Crop catalogue (names in en and fi)
+GET {{baseUrl}}/crops
+Authorization: Bearer {{token}}
 
-{"name": "Developer", "task": "Test the API"}
-
-### Background example (poll /jobs/{job_id} with the returned ID)
-POST {{baseUrl}}/example/async
+### Create a garden
+POST {{baseUrl}}/gardens
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
-{"name": "Developer", "task": "Test a background job"}
+{"name": "Allotment"}
 
-### Create an item (use the returned ID below)
-POST {{baseUrl}}/items
+### Garden with its active beds (add ?include_archived=true for archived beds)
+GET {{baseUrl}}/gardens/{{gardenId}}
+Authorization: Bearer {{token}}
+
+### Add a bed (metres)
+POST {{baseUrl}}/gardens/{{gardenId}}/beds
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
-{"title": "An idea", "description": "A few details"}
+{"name": "North bed", "x": 0, "y": 0, "width": 1.2, "height": 4}
 
-### List your items
-GET {{baseUrl}}/items?limit=20&offset=0
-Authorization: Bearer {{token}}
-
-### Read an item
-GET {{baseUrl}}/items/{{itemId}}
-Authorization: Bearer {{token}}
-
-### Replace an item
-PUT {{baseUrl}}/items/{{itemId}}
+### Record history; omit start_month/end_month to use the crop's default window
+POST {{baseUrl}}/beds/{{bedId}}/plantings
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
-{"title": "Updated idea", "description": ""}
+{"crop_id": {{cropId}}, "year": 2026, "start_month": "2026-04", "end_month": "2026-06"}
 
-### Delete an item
-DELETE {{baseUrl}}/items/{{itemId}}
+### Garden history
+GET {{baseUrl}}/gardens/{{gardenId}}/plantings?year_from=2024
+Authorization: Bearer {{token}}
+
+### Create next year's plan (one per garden and year)
+POST {{baseUrl}}/plans
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"garden_id": {{gardenId}}, "year": 2027}
+
+### Request a crop (sets the quantity if already requested)
+POST {{baseUrl}}/plans/{{planId}}/crops
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"crop_id": {{cropId}}, "quantity": 2}
+
+### Place a crop manually (locked by default)
+POST {{baseUrl}}/plans/{{planId}}/placements
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"bed_id": {{bedId}}, "crop_id": {{cropId}}}
+
+### Plan with requested/placed counts and placements
+GET {{baseUrl}}/plans/{{planId}}
+Authorization: Bearer {{token}}
+
+### Complete the plan and write its placements to history
+POST {{baseUrl}}/plans/{{planId}}/complete
 Authorization: Bearer {{token}}
 
 ### Liveness

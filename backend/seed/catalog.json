@@ -1,0 +1,854 @@
+{
+  "_comment": "Shared crop catalogue (D007). Loaded idempotently by `make seed`, keyed by slug. Months are approximate outdoor windows for a Finnish/Nordic garden; default_start_year_offset -1 means planted in the previous autumn (D012). Names require en and fi (D014).",
+  "families": [
+    {
+      "slug": "solanaceae",
+      "names": {
+        "en": "Nightshade family",
+        "fi": "Koisokasvit"
+      }
+    },
+    {
+      "slug": "brassicaceae",
+      "names": {
+        "en": "Cabbage family",
+        "fi": "Ristikukkaiskasvit"
+      }
+    },
+    {
+      "slug": "fabaceae",
+      "names": {
+        "en": "Legumes",
+        "fi": "Palkokasvit"
+      }
+    },
+    {
+      "slug": "apiaceae",
+      "names": {
+        "en": "Carrot family",
+        "fi": "Sarjakukkaiskasvit"
+      }
+    },
+    {
+      "slug": "amaryllidaceae",
+      "names": {
+        "en": "Onion family",
+        "fi": "Laukkakasvit"
+      }
+    },
+    {
+      "slug": "cucurbitaceae",
+      "names": {
+        "en": "Cucurbits",
+        "fi": "Kurpitsakasvit"
+      }
+    },
+    {
+      "slug": "amaranthaceae",
+      "names": {
+        "en": "Beet and spinach family",
+        "fi": "Revonhäntäkasvit"
+      }
+    },
+    {
+      "slug": "asteraceae",
+      "names": {
+        "en": "Daisy family",
+        "fi": "Asterikasvit"
+      }
+    },
+    {
+      "slug": "poaceae",
+      "names": {
+        "en": "Grasses",
+        "fi": "Heinäkasvit"
+      }
+    }
+  ],
+  "crops": [
+    {
+      "slug": "potato",
+      "names": {
+        "en": "Potato",
+        "fi": "Peruna"
+      },
+      "family": "solanaceae",
+      "default_start_month": 5,
+      "default_end_month": 9,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "early-potato",
+      "names": {
+        "en": "Early potato",
+        "fi": "Varhaisperuna"
+      },
+      "family": "solanaceae",
+      "default_start_month": 5,
+      "default_end_month": 7,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "tomato",
+      "names": {
+        "en": "Tomato",
+        "fi": "Tomaatti"
+      },
+      "family": "solanaceae",
+      "default_start_month": 6,
+      "default_end_month": 9,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "pepper",
+      "names": {
+        "en": "Sweet pepper",
+        "fi": "Paprika"
+      },
+      "family": "solanaceae",
+      "default_start_month": 6,
+      "default_end_month": 9,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "eggplant",
+      "names": {
+        "en": "Eggplant",
+        "fi": "Munakoiso"
+      },
+      "family": "solanaceae",
+      "default_start_month": 6,
+      "default_end_month": 9,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "white-cabbage",
+      "names": {
+        "en": "White cabbage",
+        "fi": "Keräkaali"
+      },
+      "family": "brassicaceae",
+      "default_start_month": 5,
+      "default_end_month": 10,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "cauliflower",
+      "names": {
+        "en": "Cauliflower",
+        "fi": "Kukkakaali"
+      },
+      "family": "brassicaceae",
+      "default_start_month": 5,
+      "default_end_month": 9,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "broccoli",
+      "names": {
+        "en": "Broccoli",
+        "fi": "Parsakaali"
+      },
+      "family": "brassicaceae",
+      "default_start_month": 5,
+      "default_end_month": 9,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "kale",
+      "names": {
+        "en": "Kale",
+        "fi": "Lehtikaali"
+      },
+      "family": "brassicaceae",
+      "default_start_month": 5,
+      "default_end_month": 10,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "brussels-sprouts",
+      "names": {
+        "en": "Brussels sprouts",
+        "fi": "Ruusukaali"
+      },
+      "family": "brassicaceae",
+      "default_start_month": 5,
+      "default_end_month": 10,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "kohlrabi",
+      "names": {
+        "en": "Kohlrabi",
+        "fi": "Kyssäkaali"
+      },
+      "family": "brassicaceae",
+      "default_start_month": 5,
+      "default_end_month": 8,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "chinese-cabbage",
+      "names": {
+        "en": "Chinese cabbage",
+        "fi": "Kiinankaali"
+      },
+      "family": "brassicaceae",
+      "default_start_month": 7,
+      "default_end_month": 9,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "pak-choi",
+      "names": {
+        "en": "Pak choi",
+        "fi": "Paksoi"
+      },
+      "family": "brassicaceae",
+      "default_start_month": 5,
+      "default_end_month": 7,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "radish",
+      "names": {
+        "en": "Radish",
+        "fi": "Retiisi"
+      },
+      "family": "brassicaceae",
+      "default_start_month": 5,
+      "default_end_month": 6,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "turnip",
+      "names": {
+        "en": "Turnip",
+        "fi": "Nauris"
+      },
+      "family": "brassicaceae",
+      "default_start_month": 5,
+      "default_end_month": 8,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "swede",
+      "names": {
+        "en": "Swede",
+        "fi": "Lanttu"
+      },
+      "family": "brassicaceae",
+      "default_start_month": 5,
+      "default_end_month": 9,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "rocket",
+      "names": {
+        "en": "Rocket",
+        "fi": "Rucola"
+      },
+      "family": "brassicaceae",
+      "default_start_month": 5,
+      "default_end_month": 7,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "pea",
+      "names": {
+        "en": "Pea",
+        "fi": "Herne"
+      },
+      "family": "fabaceae",
+      "default_start_month": 5,
+      "default_end_month": 8,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "sugar-pea",
+      "names": {
+        "en": "Sugar snap pea",
+        "fi": "Sokeriherne"
+      },
+      "family": "fabaceae",
+      "default_start_month": 5,
+      "default_end_month": 8,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "bush-bean",
+      "names": {
+        "en": "Bush bean",
+        "fi": "Pensaspapu"
+      },
+      "family": "fabaceae",
+      "default_start_month": 6,
+      "default_end_month": 9,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "runner-bean",
+      "names": {
+        "en": "Runner bean",
+        "fi": "Ruusupapu"
+      },
+      "family": "fabaceae",
+      "default_start_month": 6,
+      "default_end_month": 9,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "broad-bean",
+      "names": {
+        "en": "Broad bean",
+        "fi": "Härkäpapu"
+      },
+      "family": "fabaceae",
+      "default_start_month": 5,
+      "default_end_month": 8,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "carrot",
+      "names": {
+        "en": "Carrot",
+        "fi": "Porkkana"
+      },
+      "family": "apiaceae",
+      "default_start_month": 5,
+      "default_end_month": 9,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "parsnip",
+      "names": {
+        "en": "Parsnip",
+        "fi": "Palsternakka"
+      },
+      "family": "apiaceae",
+      "default_start_month": 5,
+      "default_end_month": 10,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "celery",
+      "names": {
+        "en": "Celery",
+        "fi": "Lehtiselleri"
+      },
+      "family": "apiaceae",
+      "default_start_month": 6,
+      "default_end_month": 9,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "celeriac",
+      "names": {
+        "en": "Celeriac",
+        "fi": "Mukulaselleri"
+      },
+      "family": "apiaceae",
+      "default_start_month": 6,
+      "default_end_month": 10,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "parsley",
+      "names": {
+        "en": "Parsley",
+        "fi": "Persilja"
+      },
+      "family": "apiaceae",
+      "default_start_month": 5,
+      "default_end_month": 9,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "dill",
+      "names": {
+        "en": "Dill",
+        "fi": "Tilli"
+      },
+      "family": "apiaceae",
+      "default_start_month": 5,
+      "default_end_month": 8,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "fennel",
+      "names": {
+        "en": "Florence fennel",
+        "fi": "Fenkoli"
+      },
+      "family": "apiaceae",
+      "default_start_month": 6,
+      "default_end_month": 9,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "onion",
+      "names": {
+        "en": "Onion",
+        "fi": "Ruokasipuli"
+      },
+      "family": "amaryllidaceae",
+      "default_start_month": 5,
+      "default_end_month": 8,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "shallot",
+      "names": {
+        "en": "Shallot",
+        "fi": "Salottisipuli"
+      },
+      "family": "amaryllidaceae",
+      "default_start_month": 5,
+      "default_end_month": 8,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "garlic",
+      "names": {
+        "en": "Garlic (autumn-planted)",
+        "fi": "Valkosipuli (syysistutus)"
+      },
+      "family": "amaryllidaceae",
+      "default_start_month": 10,
+      "default_end_month": 7,
+      "default_start_year_offset": -1
+    },
+    {
+      "slug": "leek",
+      "names": {
+        "en": "Leek",
+        "fi": "Purjo"
+      },
+      "family": "amaryllidaceae",
+      "default_start_month": 5,
+      "default_end_month": 10,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "spring-onion",
+      "names": {
+        "en": "Spring onion",
+        "fi": "Kevätsipuli"
+      },
+      "family": "amaryllidaceae",
+      "default_start_month": 5,
+      "default_end_month": 8,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "cucumber",
+      "names": {
+        "en": "Outdoor cucumber",
+        "fi": "Avomaankurkku"
+      },
+      "family": "cucurbitaceae",
+      "default_start_month": 6,
+      "default_end_month": 9,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "zucchini",
+      "names": {
+        "en": "Zucchini",
+        "fi": "Kesäkurpitsa"
+      },
+      "family": "cucurbitaceae",
+      "default_start_month": 6,
+      "default_end_month": 9,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "pumpkin",
+      "names": {
+        "en": "Pumpkin",
+        "fi": "Kurpitsa"
+      },
+      "family": "cucurbitaceae",
+      "default_start_month": 6,
+      "default_end_month": 9,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "winter-squash",
+      "names": {
+        "en": "Winter squash",
+        "fi": "Talvikurpitsa"
+      },
+      "family": "cucurbitaceae",
+      "default_start_month": 6,
+      "default_end_month": 9,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "beetroot",
+      "names": {
+        "en": "Beetroot",
+        "fi": "Punajuuri"
+      },
+      "family": "amaranthaceae",
+      "default_start_month": 5,
+      "default_end_month": 9,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "spinach",
+      "names": {
+        "en": "Spinach",
+        "fi": "Pinaatti"
+      },
+      "family": "amaranthaceae",
+      "default_start_month": 5,
+      "default_end_month": 7,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "chard",
+      "names": {
+        "en": "Swiss chard",
+        "fi": "Mangoldi"
+      },
+      "family": "amaranthaceae",
+      "default_start_month": 5,
+      "default_end_month": 9,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "lettuce",
+      "names": {
+        "en": "Lettuce",
+        "fi": "Salaatti"
+      },
+      "family": "asteraceae",
+      "default_start_month": 5,
+      "default_end_month": 7,
+      "default_start_year_offset": 0
+    },
+    {
+      "slug": "sweet-corn",
+      "names": {
+        "en": "Sweet corn",
+        "fi": "Sokerimaissi"
+      },
+      "family": "poaceae",
+      "default_start_month": 6,
+      "default_end_month": 9,
+      "default_start_year_offset": 0
+    }
+  ],
+  "rotation_rules": [
+    {
+      "family": "solanaceae",
+      "preferred_gap_years": 4,
+      "weight": 1.0
+    },
+    {
+      "family": "brassicaceae",
+      "preferred_gap_years": 4,
+      "weight": 1.0
+    },
+    {
+      "family": "fabaceae",
+      "preferred_gap_years": 4,
+      "weight": 1.0
+    },
+    {
+      "family": "apiaceae",
+      "preferred_gap_years": 3,
+      "weight": 1.0
+    },
+    {
+      "family": "amaryllidaceae",
+      "preferred_gap_years": 3,
+      "weight": 1.0
+    },
+    {
+      "family": "cucurbitaceae",
+      "preferred_gap_years": 2,
+      "weight": 1.0
+    },
+    {
+      "family": "amaranthaceae",
+      "preferred_gap_years": 3,
+      "weight": 1.0
+    },
+    {
+      "family": "asteraceae",
+      "preferred_gap_years": 2,
+      "weight": 1.0
+    },
+    {
+      "family": "poaceae",
+      "preferred_gap_years": 2,
+      "weight": 1.0
+    },
+    {
+      "crop": "potato",
+      "preferred_gap_years": 4,
+      "weight": 1.5
+    },
+    {
+      "crop": "early-potato",
+      "preferred_gap_years": 4,
+      "weight": 1.5
+    },
+    {
+      "crop": "pea",
+      "preferred_gap_years": 5,
+      "weight": 1.5
+    },
+    {
+      "crop": "tomato",
+      "preferred_gap_years": 4,
+      "weight": 1.2
+    },
+    {
+      "crop": "onion",
+      "preferred_gap_years": 4,
+      "weight": 1.2
+    },
+    {
+      "crop": "garlic",
+      "preferred_gap_years": 4,
+      "weight": 1.2
+    }
+  ],
+  "companion_rules": [
+    {
+      "crops": [
+        "carrot",
+        "onion"
+      ],
+      "compatibility": "positive",
+      "weight": 1.0
+    },
+    {
+      "crops": [
+        "carrot",
+        "leek"
+      ],
+      "compatibility": "positive",
+      "weight": 1.0
+    },
+    {
+      "crops": [
+        "carrot",
+        "spring-onion"
+      ],
+      "compatibility": "positive",
+      "weight": 1.0
+    },
+    {
+      "crops": [
+        "carrot",
+        "dill"
+      ],
+      "compatibility": "negative",
+      "weight": 1.0
+    },
+    {
+      "crops": [
+        "white-cabbage",
+        "dill"
+      ],
+      "compatibility": "positive",
+      "weight": 1.0
+    },
+    {
+      "crops": [
+        "white-cabbage",
+        "celery"
+      ],
+      "compatibility": "positive",
+      "weight": 1.0
+    },
+    {
+      "crops": [
+        "kale",
+        "dill"
+      ],
+      "compatibility": "positive",
+      "weight": 1.0
+    },
+    {
+      "crops": [
+        "broccoli",
+        "dill"
+      ],
+      "compatibility": "positive",
+      "weight": 1.0
+    },
+    {
+      "crops": [
+        "cauliflower",
+        "celery"
+      ],
+      "compatibility": "positive",
+      "weight": 1.0
+    },
+    {
+      "crops": [
+        "bush-bean",
+        "sweet-corn"
+      ],
+      "compatibility": "positive",
+      "weight": 1.0
+    },
+    {
+      "crops": [
+        "runner-bean",
+        "sweet-corn"
+      ],
+      "compatibility": "positive",
+      "weight": 1.0
+    },
+    {
+      "crops": [
+        "pumpkin",
+        "sweet-corn"
+      ],
+      "compatibility": "positive",
+      "weight": 1.0
+    },
+    {
+      "crops": [
+        "winter-squash",
+        "sweet-corn"
+      ],
+      "compatibility": "positive",
+      "weight": 1.0
+    },
+    {
+      "crops": [
+        "cucumber",
+        "dill"
+      ],
+      "compatibility": "positive",
+      "weight": 1.0
+    },
+    {
+      "crops": [
+        "lettuce",
+        "radish"
+      ],
+      "compatibility": "positive",
+      "weight": 1.0
+    },
+    {
+      "crops": [
+        "beetroot",
+        "onion"
+      ],
+      "compatibility": "positive",
+      "weight": 1.0
+    },
+    {
+      "crops": [
+        "tomato",
+        "parsley"
+      ],
+      "compatibility": "positive",
+      "weight": 1.0
+    },
+    {
+      "crops": [
+        "pea",
+        "onion"
+      ],
+      "compatibility": "negative",
+      "weight": 1.0
+    },
+    {
+      "crops": [
+        "pea",
+        "garlic"
+      ],
+      "compatibility": "negative",
+      "weight": 1.0
+    },
+    {
+      "crops": [
+        "pea",
+        "leek"
+      ],
+      "compatibility": "negative",
+      "weight": 1.0
+    },
+    {
+      "crops": [
+        "bush-bean",
+        "onion"
+      ],
+      "compatibility": "negative",
+      "weight": 1.0
+    },
+    {
+      "crops": [
+        "bush-bean",
+        "garlic"
+      ],
+      "compatibility": "negative",
+      "weight": 1.0
+    },
+    {
+      "crops": [
+        "broad-bean",
+        "onion"
+      ],
+      "compatibility": "negative",
+      "weight": 1.0
+    },
+    {
+      "crops": [
+        "bush-bean",
+        "fennel"
+      ],
+      "compatibility": "negative",
+      "weight": 1.0
+    },
+    {
+      "crops": [
+        "tomato",
+        "fennel"
+      ],
+      "compatibility": "negative",
+      "weight": 1.0
+    },
+    {
+      "crops": [
+        "potato",
+        "tomato"
+      ],
+      "compatibility": "negative",
+      "weight": 1.0
+    },
+    {
+      "crops": [
+        "potato",
+        "pumpkin"
+      ],
+      "compatibility": "negative",
+      "weight": 1.0
+    },
+    {
+      "crops": [
+        "potato",
+        "cucumber"
+      ],
+      "compatibility": "negative",
+      "weight": 1.0
+    },
+    {
+      "crops": [
+        "tomato",
+        "white-cabbage"
+      ],
+      "compatibility": "negative",
+      "weight": 1.0
+    }
+  ]
+}

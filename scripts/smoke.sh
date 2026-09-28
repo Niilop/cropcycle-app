@@ -3,7 +3,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 # Isolate each invocation, even in a directory where the application is already running.
-project="template-smoke-$(date +%s)-$$"
+project="cropcycle-smoke-$(date +%s)-$$"
 compose=(docker compose --env-file /dev/null --file compose.smoke.yaml --project-name "$project")
 artifacts=frontend/test-results/smoke
 mkdir -p "$artifacts"

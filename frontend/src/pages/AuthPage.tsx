@@ -12,7 +12,8 @@ export function AuthPage({ register = false }: { register?: boolean }) {
   const [error, setError] = useState('')
   const [pending, setPending] = useState(false)
   const from: unknown = location.state?.from
-  const destination = typeof from === 'string' && ['/items', '/account'].includes(from) ? from : '/'
+  const destination =
+    typeof from === 'string' && ['/gardens', '/account'].includes(from) ? from : '/'
 
   if (session) return <Navigate to={destination} replace />
 
@@ -52,9 +53,7 @@ export function AuthPage({ register = false }: { register?: boolean }) {
       <p className="eyebrow">Your account</p>
       <h1>{register ? 'Create an account' : 'Welcome back'}</h1>
       <p className="muted">
-        {register
-          ? 'Get started with your own workspace.'
-          : 'Sign in to access your items and account.'}
+        {register ? 'Start planning your garden.' : 'Sign in to access your items and account.'}
       </p>
       {!register && location.state?.registered && (
         <p className="notice success" role="status">

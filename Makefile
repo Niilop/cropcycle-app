@@ -1,10 +1,10 @@
 .DEFAULT_GOAL := help
 BACKEND_PORT ?= 8000
 FRONTEND_PORT ?= 5173
-.PHONY: help setup dev backend frontend migrate check check-backend check-frontend smoke
+.PHONY: help setup dev backend frontend migrate seed check check-backend check-frontend smoke
 
 help:
-	@printf '%s\n' 'make setup          Install locked dependencies; create .env if absent' 'make dev            Start backend and frontend; Ctrl+C stops both' 'make backend        Start only the backend with reload' 'make frontend       Start only the frontend' 'make migrate        Apply migrations to the configured database' 'make check          Run backend and frontend checks (Chromium required)' 'make check-backend  Run Ruff and pytest' 'make check-frontend Run lint, formatting, build, and mocked browser tests' 'make smoke          Build and test the full stack in disposable Docker containers'
+	@printf '%s\n' 'make setup          Install locked dependencies; create .env if absent' 'make dev            Start backend and frontend; Ctrl+C stops both' 'make backend        Start only the backend with reload' 'make frontend       Start only the frontend' 'make migrate        Apply migrations to the configured database' 'make seed           Load or update the crop catalogue (safe to repeat)' 'make check          Run backend and frontend checks (Chromium required)' 'make check-backend  Run Ruff and pytest' 'make check-frontend Run lint, formatting, build, and mocked browser tests' 'make smoke          Build and test the full stack in disposable Docker containers'
 
 setup:
 	uv sync --all-packages --locked
@@ -22,6 +22,9 @@ frontend:
 
 migrate:
 	uv run --no-sync alembic -c backend/alembic.ini upgrade head
+
+seed:
+	uv run --no-sync python -m backend.seed
 
 check: check-backend check-frontend
 

@@ -11,20 +11,9 @@ export interface Token {
   token_type: string
 }
 
-export interface Item {
+export interface Garden {
   id: number
-  owner_id: number
-  title: string
-  description: string
+  name: string
   created_at: string
   updated_at: string
-}
-
-export interface ItemList {
-  items: Item[]
-  total: number
-}
-
-export interface ExampleResult {
-  result: string
 }

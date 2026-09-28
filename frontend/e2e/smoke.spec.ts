@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { expect, test } from '@playwright/test'
 import type { Page } from '@playwright/test'
-import type { Item, Token } from '../src/api/types'
+import type { Garden, Token } from '../src/api/types'
 
 const password = 'smoke-test-password-123'
 
@@ -28,7 +28,9 @@ async function signIn(page: Page, username: string) {
   return { Authorization: `Bearer ${token.access_token}` }
 }
 
-test('real registration, login, persistence, ownership and item CRUD', async ({ page }) => {
+test('real registration, login, persistence, ownership and garden planning API', async ({
+  page,
+}) => {
   const errors: string[] = []
   page.on('pageerror', (error) => errors.push(error.message))
   const username = `smoke-${randomUUID()}`
@@ -36,62 +38,76 @@ test('real registration, login, persistence, ownership and item CRUD', async ({ 
   expect(ready.status()).toBe(200)
   await register(page, username)
   const ownerHeaders = await signIn(page, username)
-  await page.getByRole('link', { name: 'Items', exact: true }).click()
-  await expect(page.getByRole('heading', { name: 'No items here' })).toBeVisible()
-  await page.getByLabel('Title', { exact: true }).fill('Private smoke item')
-  await page.getByLabel('Description').fill('Stored in PostgreSQL')
+  await page.getByRole('link', { name: 'Gardens', exact: true }).click()
+  await expect(page.getByRole('heading', { name: 'No gardens yet' })).toBeVisible()
+  await page.getByLabel('Name', { exact: true }).fill('Smoke allotment')
   const creation = page.waitForResponse(
     (response) =>
-      new URL(response.url()).pathname === '/api/items' && response.request().method() === 'POST',
+      new URL(response.url()).pathname === '/api/gardens' && response.request().method() === 'POST',
   )
-  await page.getByRole('button', { name: 'Create item' }).click()
+  await page.getByRole('button', { name: 'Create garden' }).click()
   const created = await creation
   expect(created.status()).toBe(201)
-  const item: Item = await created.json()
-  await expect(page.getByRole('status')).toHaveText('Item created.')
+  const garden: Garden = await created.json()
+  await expect(page.getByRole('status')).toHaveText('Garden created.')
+
+  // The seeded catalogue and domain API work through Nginx and PostgreSQL.
+  const crops = await page.request.get('/api/crops', { headers: ownerHeaders })
+  expect(crops.status()).toBe(200)
+  const garlic = (await crops.json()).find((crop: { slug: string }) => crop.slug === 'garlic')
+  expect(garlic.names.fi).toContain('Valkosipuli')
+  const bed = await page.request.post(`/api/gardens/${garden.id}/beds`, {
+    headers: ownerHeaders,
+    data: { name: 'Bed A', x: 0, y: 0, width: 1.2, height: 4 },
+  })
+  expect(bed.status()).toBe(201)
+  const bedId = (await bed.json()).id
+  const planting = await page.request.post(`/api/beds/${bedId}/plantings`, {
+    headers: ownerHeaders,
+    data: { crop_id: garlic.id, year: 2026 },
+  })
+  expect(planting.status()).toBe(201)
+  expect(await planting.json()).toMatchObject({ start_month: '2025-10', end_month: '2026-07' })
+  const plan = await page.request.post('/api/plans', {
+    headers: ownerHeaders,
+    data: { garden_id: garden.id, year: 2027 },
+  })
+  expect(plan.status()).toBe(201)
+  const planId = (await plan.json()).id
+  const placement = await page.request.post(`/api/plans/${planId}/placements`, {
+    headers: ownerHeaders,
+    data: { bed_id: bedId, crop_id: garlic.id },
+  })
+  expect(placement.status()).toBe(201)
+  expect(await placement.json()).toMatchObject({ locked: true, source: 'manual' })
 
   // A new page/session must load the saved record from the real API.
   await page.reload()
   await expect(page.getByRole('heading', { name: 'Welcome back' })).toBeVisible()
   await signIn(page, username)
-  await expect(
-    page.getByRole('cell', { name: 'Private smoke item Stored in PostgreSQL', exact: true }),
-  ).toBeVisible()
-  await page.getByRole('button', { name: 'Edit Private smoke item', exact: true }).click()
-  await page.getByLabel('Title', { exact: true }).fill('Updated smoke item')
-  await page.getByRole('button', { name: 'Save changes' }).click()
-  await expect(page.getByRole('status')).toHaveText('Item updated.')
+  await expect(page.getByRole('listitem').filter({ hasText: 'Smoke allotment' })).toBeVisible()
 
   await page.getByRole('button', { name: 'Sign out' }).click()
   const otherName = `other-${randomUUID()}`
   await register(page, otherName)
   const otherHeaders = await signIn(page, otherName)
-  await page.getByRole('link', { name: 'Items', exact: true }).click()
-  await expect(page.getByRole('heading', { name: 'No items here' })).toBeVisible()
-  const path = `/api/items/${item.id}`
-  expect((await page.request.get(path)).status()).toBe(401)
-  const otherList = await page.request.get('/api/items', { headers: otherHeaders })
-  expect(otherList.status()).toBe(200)
-  expect(await otherList.json()).toEqual({ items: [], total: 0 })
-  for (const method of ['GET', 'PUT', 'DELETE']) {
-    const response = await page.request.fetch(path, {
-      method,
-      headers: otherHeaders,
-      ...(method === 'PUT' ? { data: { title: 'Unauthorized edit' } } : {}),
-    })
-    expect(response.status()).toBe(404)
+  await page.getByRole('link', { name: 'Gardens', exact: true }).click()
+  await expect(page.getByRole('heading', { name: 'No gardens yet' })).toBeVisible()
+  const gardenPath = `/api/gardens/${garden.id}`
+  expect((await page.request.get(gardenPath)).status()).toBe(401)
+  for (const path of [gardenPath, `/api/beds/${bedId}/plantings`, `/api/plans/${planId}`]) {
+    expect((await page.request.get(path, { headers: otherHeaders })).status()).toBe(404)
   }
-  const stored = await page.request.get(path, { headers: ownerHeaders })
+  const rename = await page.request.put(gardenPath, {
+    headers: otherHeaders,
+    data: { name: 'Unauthorized edit' },
+  })
+  expect(rename.status()).toBe(404)
+  const stored = await page.request.get(gardenPath, { headers: ownerHeaders })
   expect(stored.status()).toBe(200)
-  expect((await stored.json()).title).toBe('Updated smoke item')
+  expect(await stored.json()).toMatchObject({ name: 'Smoke allotment', beds: [{ id: bedId }] })
 
-  await page.getByRole('button', { name: 'Sign out' }).click()
-  await expect(page.getByRole('heading', { name: 'Welcome back' })).toBeVisible()
-  await signIn(page, username)
-  await page.getByRole('link', { name: 'Items', exact: true }).click()
-  await page.getByRole('button', { name: 'Delete Updated smoke item', exact: true }).click()
-  await page.getByRole('button', { name: 'Confirm delete' }).click()
-  await expect(page.getByRole('heading', { name: 'No items here' })).toBeVisible()
-  expect((await page.request.get(path, { headers: ownerHeaders })).status()).toBe(404)
+  expect((await page.request.delete(gardenPath, { headers: ownerHeaders })).status()).toBe(204)
+  expect((await page.request.get(gardenPath, { headers: ownerHeaders })).status()).toBe(404)
   expect(errors).toEqual([])
 })

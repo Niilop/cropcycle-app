@@ -4,7 +4,7 @@ Record choices that future maintainers would otherwise have to rediscover: bound
 
 ## D001 — Keep the starter domain-neutral
 
-- Status: superseded by D007 once plan 002 Phase 1 lands (items are replaced by the crop domain).
+- Status: superseded by D007 (items were replaced by the crop domain in `0003_crop_domain`).
 - Decision: demonstrate private CRUD with a small item containing a title and description. Keep file processing and product-specific models out of the baseline.
 - Reason: copied projects need an ownership example without inheriting an upload workflow or a particular product domain.
 - Consequence: a new project should rename or replace items. Shared catalogs and user-owned collections can be separate models rather than forcing all data into items.
@@ -18,7 +18,7 @@ Record choices that future maintainers would otherwise have to rediscover: bound
 
 ## D003 — Keep the background example in-process
 
-- Status: superseded by D008 (the jobs example is removed in plan 002; layout generation is synchronous).
+- Status: superseded by D008 (the jobs example was removed in plan 002 Phase 1; layout generation is synchronous).
 - Decision: demonstrate a short FastAPI background task with a stored job record and a separate database session.
 - Reason: show task submission and status lookup without requiring queue infrastructure in every copied project.
 - Consequence: task execution is not durable. Long-running analysis or ingestion that needs retries and recovery requires a separate worker design.

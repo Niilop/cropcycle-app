@@ -2,20 +2,26 @@
 
 ## Current state
 
-The repository is still the unmodified FastAPI/React template: authentication, private-item CRUD, a background job example, a Vite web frontend, migrations, CI, and a full-stack smoke test. The project has been initialized as **CropCycle**, a mobile-first crop rotation planner. Its context, requirements, and decisions are documented, but no domain code exists yet.
+CropCycle's backend domain is implemented on branch `feat/phase1-backend-domain` (not yet pushed or merged):
+
+- a seeded en/fi crop catalogue;
+- owner-scoped gardens, beds (archived rather than deleted) and planting history, with windows that can cross the new year;
+- yearly plans with requested crops, locked manual placements, and completion into history.
+
+The template's example features are removed. The Vite web frontend is a temporary sign-in and gardens shell. Scoring, **Fill remaining** and the Expo app are not built yet.
 
 ## Active work
 
-[002 — Crop rotation planner MVP](plans/002-crop-rotation-mvp.md): Phase 0 (initialization) is complete. Phase 1 (backend domain, migrations, seed catalogue, CRUD) is next.
+[002 — Crop rotation planner MVP](plans/002-crop-rotation-mvp.md): Phase 1 is complete and awaiting review. Phase 2 (scoring and auto-layout) is next.
 
 ## Blockers and open questions
 
-There are no blockers. The product questions in [PROJECT.md](PROJECT.md#open-product-questions) (hosting, language, plan completion, overwintering crops) have recommended defaults in the plan and do not block Phases 1–3.
+There are no product blockers. Locally, Docker is unavailable in this WSL distro, so `make smoke` (Nginx) and the PostgreSQL 18 checks rely on CI. Equivalent checks passed on embedded PostgreSQL 16 (see the plan's validation results). The hosting provider and distribution channel remain open until Phase 5.
 
 ## Validation reference
 
-The template's last recorded validation is in [plan 001](plans/001-template-finalization.md#validation-results). No application changes have been made since. New results will be recorded in plan 002.
+See [plan 002 validation results](plans/002-crop-rotation-mvp.md#validation-results) for the Phase 1 working tree.
 
 ## Next step
 
-Create a feature branch for Phase 1. Remove the template's items, example, and jobs features, then add the crop domain models and the `0003_crop_domain` migration.
+Push `feat/phase1-backend-domain` and open a PR so CI runs. Then begin Phase 2 with the pure `backend/services/layout/` module and its unit tests.

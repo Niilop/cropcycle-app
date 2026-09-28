@@ -1,6 +1,6 @@
 # 002 — Crop rotation planner MVP
 
-- Status: active (Phase 1 in progress)
+- Status: active (Phase 1 complete, pending review; Phase 2 next)
 - Updated: 2026-09-28
 - Branch / PR: `feat/phase1-backend-domain`
 - Related decisions: [D005–D014](../DECISIONS.md)
@@ -113,13 +113,13 @@ All private routes are authenticated and garden-owner scoped. They return 404 fo
 
 - [x] Requirements stored; PROJECT, STATUS, and DECISIONS initialized; this plan drafted.
 
-### Phase 1 — Backend domain and CRUD
+### Phase 1 — Backend domain and CRUD (complete, pending review)
 
-- [ ] Remove the items, example, and jobs features along with their tests and frontend usage. Rename the app settings and README title.
-- [ ] Add models and the migration `0003_crop_domain`. It drops `items` and `background_jobs`, with a downgrade that recreates empty tables. Also trim the Vite frontend and smoke test to auth plus the garden API, so CI stays green until Phase 5.
-- [ ] Add the seed catalogue (about 40 crops with `en`/`fi` names, families, rotation and companion rules), the idempotent loader, and `make seed`.
-- [ ] Add CRUD routes from requirements §9 plus the additions above (excluding the Phase 2 scoring endpoints), including plan completion, with ownership and validation tests.
-- [ ] Checks: `make check-backend`, plus migration upgrade, `alembic check`, and downgrade/upgrade on a disposable PostgreSQL database. Loading the seed twice must produce no duplicates.
+- [x] Removed the items, example and jobs features along with their tests. Renamed the app (settings, README, web shell). Token lifetime now defaults to 30 days.
+- [x] Added models and the migration `0003_crop_domain`. It drops `items`, `background_jobs` and the `jobstatus` enum; the downgrade recreates the empty tables and drops the new enums. Trimmed the Vite frontend to sign-in plus a gardens page, and moved the smoke test to the garden, history and plan API.
+- [x] Seed catalogue: 43 crops across 9 families with en/fi names, 15 rotation rules and 29 companion pairs. Added a validating, idempotent loader and `make seed`; the smoke stack seeds on start.
+- [x] CRUD routes from requirements §9 plus the additions above, including plan completion and reopening. Covered by ownership, validation, overlap-acceptance and completion tests.
+- [x] Checks: see validation results.
 
 ### Phase 2 — Scoring and auto-layout
 
@@ -156,11 +156,20 @@ Answered on 2026-09-28 (see [PROJECT.md](../PROJECT.md#product-answers-2026-09-2
 
 | Check / command | Result | Commit or relevant context |
 | --- | --- | --- |
-| Phase 0 docs: local link check and `git diff --check` | Pass (0 broken links) | Documentation only; application checks not needed or run |
+| Phase 0 docs: local link check and `git diff --check` | Pass (0 broken links) | Documentation only |
+| `ruff check .`, `ruff format --check .` | Pass | Phase 1 working tree |
+| `pytest` | 64 passed | SQLite; includes the migration chain 0001→0003, downgrade to base, and seed idempotence |
+| PostgreSQL migration checks | Pass: `upgrade 0002`, `upgrade head`, `alembic check` (no changes), seed ×2 (second run adds nothing), cascade and `SET NULL` behaviour, `downgrade base`, `upgrade head`, `alembic check` | Embedded **PostgreSQL 16** via `pgserver` in an isolated uv environment (no Docker or local server available). CI runs PostgreSQL 18. |
+| Frontend `lint`, `format:check`, `build`, `npm test` | Pass; 10 browser tests (desktop and mobile) | Mocked API |
+| Smoke spec against a real stack | Pass | Embedded PostgreSQL 16, migrated and seeded, with uvicorn and the Vite proxy. **Not** run through Nginx/Docker: `make smoke` needs Docker, which this WSL distro lacks. CI runs it. |
 
 ## Handoff / completion
 
-- Implemented: Phase 0 (context docs only). No application code changed.
-- Remaining work or blockers: Phases 1–5. There are no blockers; the open questions above do not block Phases 1–3.
-- Next concrete step: start Phase 1 on a feature branch, beginning with removing the template examples and adding the domain models and migration.
-- Deviations from the plan and relevant references: none yet.
+- Implemented: Phases 0–1. The backend domain, catalogue, CRUD and plan completion are on `feat/phase1-backend-domain`.
+- Remaining work or blockers: Phases 2–5. `make smoke` and the PostgreSQL 18 checks have not run locally for lack of Docker; confirm them in CI after pushing.
+- Next concrete step: push the branch and open a PR so that CI covers Docker smoke and PostgreSQL 18. Then start Phase 2 with the pure `layout` module (scoring inputs as dataclasses, occupancy including neighbouring years' plans) and its unit tests.
+- Deviations from the plan:
+  - The garden canvas size was dropped; it is derived from the beds.
+  - Several plans per garden and year were replaced by one per garden and year (D012).
+  - `POST /plans/{id}/crops` upserts, and `DELETE /plans/{id}/crops/{crop_id}` is keyed by crop.
+  - Completed plans are read-only until reopened.
