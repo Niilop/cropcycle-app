@@ -80,6 +80,38 @@ test('real registration, login, persistence, ownership and garden planning API',
   })
   expect(placement.status()).toBe(201)
   expect(await placement.json()).toMatchObject({ locked: true, source: 'manual' })
+  const carrot = (await crops.json()).find((crop: { slug: string }) => crop.slug === 'carrot')
+  const secondBed = await page.request.post(`/api/gardens/${garden.id}/beds`, {
+    headers: ownerHeaders,
+    data: { name: 'Bed B', x: 3, y: 0, width: 1.2, height: 4 },
+  })
+  expect(secondBed.status()).toBe(201)
+  const requested = await page.request.post(`/api/plans/${planId}/crops`, {
+    headers: ownerHeaders,
+    data: { crop_id: carrot.id, quantity: 1 },
+  })
+  expect(requested.status()).toBe(201)
+  const suitability = await page.request.get(
+    `/api/plans/${planId}/suitability?crop_id=${carrot.id}`,
+    {
+      headers: ownerHeaders,
+    },
+  )
+  expect(suitability.status()).toBe(200)
+  expect(await suitability.json()).toHaveLength(2)
+  const layout = await page.request.post(`/api/plans/${planId}/generate-layout`, {
+    headers: ownerHeaders,
+  })
+  expect(layout.status()).toBe(200)
+  const generated = await layout.json()
+  expect(generated.unplaced).toEqual([])
+  expect(generated.plan.placements).toHaveLength(2)
+  expect(generated.plan.placements[1]).toMatchObject({
+    crop_id: carrot.id,
+    bed_id: (await secondBed.json()).id,
+    source: 'suggested',
+    locked: false,
+  })
 
   // A new page/session must load the saved record from the real API.
   await page.reload()
@@ -105,7 +137,9 @@ test('real registration, login, persistence, ownership and garden planning API',
   expect(rename.status()).toBe(404)
   const stored = await page.request.get(gardenPath, { headers: ownerHeaders })
   expect(stored.status()).toBe(200)
-  expect(await stored.json()).toMatchObject({ name: 'Smoke allotment', beds: [{ id: bedId }] })
+  const storedGarden = await stored.json()
+  expect(storedGarden.name).toBe('Smoke allotment')
+  expect(storedGarden.beds.map((bed: { id: number }) => bed.id)).toContain(bedId)
 
   expect((await page.request.delete(gardenPath, { headers: ownerHeaders })).status()).toBe(204)
   expect((await page.request.get(gardenPath, { headers: ownerHeaders })).status()).toBe(404)

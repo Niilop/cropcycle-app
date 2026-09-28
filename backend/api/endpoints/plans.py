@@ -7,6 +7,9 @@ from backend.core.database import get_db
 from backend.core.rate_limit import limiter
 from backend.models.database import Plan, PlanPlacement, User
 from backend.models.schemas import (
+    AssessmentResponse,
+    BedSuitabilityResponse,
+    GenerateLayoutResponse,
     PlacementResponse,
     PlacementWrite,
     PlanCreate,
@@ -14,8 +17,9 @@ from backend.models.schemas import (
     PlannedCropWrite,
     PlanResponse,
     PlanUpdate,
+    UnplacedResponse,
 )
-from backend.services import garden_service, plan_service
+from backend.services import garden_service, layout_service, plan_service
 
 router = APIRouter(tags=["Plans"])
 
@@ -38,12 +42,14 @@ def create_plan(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ) -> PlanDetailResponse:
-    return plan_service.plan_detail(plan_service.create_plan(db, user.id, body))
+    return plan_service.plan_detail(db, plan_service.create_plan(db, user.id, body))
 
 
 @router.get("/plans/{plan_id}", response_model=PlanDetailResponse)
-def read_plan(plan: Plan = Depends(owned_plan)) -> PlanDetailResponse:
-    return plan_service.plan_detail(plan)
+def read_plan(
+    plan: Plan = Depends(owned_plan), db: Session = Depends(get_db)
+) -> PlanDetailResponse:
+    return plan_service.plan_detail(db, plan)
 
 
 @router.put("/plans/{plan_id}", response_model=PlanDetailResponse)
@@ -54,7 +60,7 @@ def update_plan(
     plan: Plan = Depends(owned_plan),
     db: Session = Depends(get_db),
 ) -> PlanDetailResponse:
-    return plan_service.plan_detail(plan_service.update_plan(db, plan, body))
+    return plan_service.plan_detail(db, plan_service.update_plan(db, plan, body))
 
 
 @router.delete("/plans/{plan_id}", status_code=204)
@@ -71,7 +77,7 @@ def delete_plan(
 def complete_plan(
     request: Request, plan: Plan = Depends(owned_plan), db: Session = Depends(get_db)
 ) -> PlanDetailResponse:
-    return plan_service.plan_detail(plan_service.complete_plan(db, plan))
+    return plan_service.plan_detail(db, plan_service.complete_plan(db, plan))
 
 
 @router.post("/plans/{plan_id}/reopen", response_model=PlanDetailResponse)
@@ -79,7 +85,7 @@ def complete_plan(
 def reopen_plan(
     request: Request, plan: Plan = Depends(owned_plan), db: Session = Depends(get_db)
 ) -> PlanDetailResponse:
-    return plan_service.plan_detail(plan_service.reopen_plan(db, plan))
+    return plan_service.plan_detail(db, plan_service.reopen_plan(db, plan))
 
 
 @router.post("/plans/{plan_id}/crops", response_model=PlanDetailResponse)
@@ -94,7 +100,7 @@ def set_planned_crop(
     """Add a crop to the plan, or change its quantity if it is already requested."""
     plan, created = plan_service.upsert_planned_crop(db, plan, body)
     response.status_code = 201 if created else 200
-    return plan_service.plan_detail(plan)
+    return plan_service.plan_detail(db, plan)
 
 
 @router.delete("/plans/{plan_id}/crops/{crop_id}", status_code=204)
@@ -140,3 +146,43 @@ def delete_placement(
 ) -> Response:
     plan_service.delete_placement(db, placement)
     return Response(status_code=204)
+
+
+def to_assessment(assessment: layout_service.layout.Assessment) -> AssessmentResponse:
+    return AssessmentResponse(
+        score=assessment.score,
+        band=assessment.band.value,
+        reasons=[reason.value for reason in assessment.reasons],
+    )
+
+
+@router.post("/plans/{plan_id}/generate-layout", response_model=GenerateLayoutResponse)
+@limiter.limit("30/minute")
+def generate_layout(
+    request: Request, plan: Plan = Depends(owned_plan), db: Session = Depends(get_db)
+) -> GenerateLayoutResponse:
+    """Fill remaining requested crops. Replaces only unlocked suggestions; manual and locked
+    placements never change. Crops without a free bed are reported in `unplaced`."""
+    unplaced = plan_service.fill_remaining(db, plan)
+    return GenerateLayoutResponse(
+        plan=plan_service.plan_detail(db, plan),
+        unplaced=[UnplacedResponse(crop_id=u.crop_id, count=u.count) for u in unplaced],
+    )
+
+
+@router.get("/plans/{plan_id}/suitability", response_model=list[BedSuitabilityResponse])
+def read_suitability(
+    crop_id: int = Query(gt=0),
+    plan: Plan = Depends(owned_plan),
+    db: Session = Depends(get_db),
+) -> list[BedSuitabilityResponse]:
+    """How well the crop would fit each active bed, for colour-coding while placing it."""
+    return [
+        BedSuitabilityResponse(
+            bed_id=item.bed_id,
+            start_month=item.start_month,
+            end_month=item.end_month,
+            assessment=to_assessment(item.assessment),
+        )
+        for item in layout_service.suitability(db, plan, crop_id)
+    ]

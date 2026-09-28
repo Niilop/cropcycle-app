@@ -15,6 +15,7 @@ from backend.models.database import (
     Planting,
 )
 from backend.models.schemas import (
+    AssessmentResponse,
     PlacementWrite,
     PlanCreate,
     PlanDetailResponse,
@@ -22,8 +23,10 @@ from backend.models.schemas import (
     PlannedCropWrite,
     PlanUpdate,
 )
+from backend.services import layout_service
 from backend.services.errors import ConflictError, InvalidReferenceError, NotFoundError
 from backend.services.garden_service import get_crop, get_garden, resolve_window
+from backend.services.layout import Unplaced
 from backend.services.windows import touches_year
 
 # Plans
@@ -40,9 +43,19 @@ def get_plan(db: Session, plan_id: int, user_id: int) -> Plan:
     return plan
 
 
-def plan_detail(plan: Plan) -> PlanDetailResponse:
+def plan_detail(db: Session, plan: Plan) -> PlanDetailResponse:
+    """The plan with requested/placed counts and a fresh assessment of each placement."""
     placed = Counter(placement.crop_id for placement in plan.placements)
     detail = PlanDetailResponse.model_validate(plan)
+    assessments = layout_service.assess_plan(db, plan)
+    for placement in detail.placements:
+        assessment = assessments.get(placement.id)
+        if assessment is not None:
+            placement.assessment = AssessmentResponse(
+                score=assessment.score,
+                band=assessment.band.value,
+                reasons=[reason.value for reason in assessment.reasons],
+            )
     detail.crops = [
         PlannedCropResponse(
             id=crop.id, crop_id=crop.crop_id, quantity=crop.quantity, placed=placed[crop.crop_id]
@@ -200,3 +213,37 @@ def delete_placement(db: Session, placement: PlanPlacement) -> None:
     require_draft(placement.plan)
     db.delete(placement)
     db.commit()
+
+
+def fill_remaining(db: Session, plan: Plan) -> list[Unplaced]:
+    """Replace unlocked suggestions with a new layout for all unplaced requested crops.
+
+    Manual and locked placements are never changed (D008).
+    """
+    require_draft(plan)
+    for placement in [
+        p for p in plan.placements if p.source == PlacementSource.SUGGESTED and not p.locked
+    ]:
+        plan.placements.remove(placement)
+    db.flush()
+    placed = Counter(placement.crop_id for placement in plan.placements)
+    demand = {
+        requested.crop_id: requested.quantity - placed[requested.crop_id]
+        for requested in plan.crops
+        if requested.quantity > placed[requested.crop_id]
+    }
+    result = layout_service.generate(db, plan, demand)
+    for suggestion in result.suggestions:
+        plan.placements.append(
+            PlanPlacement(
+                bed_id=suggestion.bed_id,
+                crop_id=suggestion.crop_id,
+                start_month=layout_service.to_date(suggestion.window.start),
+                end_month=layout_service.to_date(suggestion.window.end),
+                locked=False,
+                source=PlacementSource.SUGGESTED,
+            )
+        )
+    db.commit()
+    db.refresh(plan)
+    return result.unplaced

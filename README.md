@@ -11,7 +11,7 @@ Implemented so far:
 - Rate limits on registration, login and writes; liveness and readiness endpoints; configurable CORS; automated tests.
 - A minimal web frontend (sign-in and gardens) kept until the Expo app replaces it.
 
-Rotation scoring and **Fill remaining** are planned for Phase 2.
+- Rotation, family, neighbour and timing scoring with gentle suitability bands and reason codes; **Fill remaining** optimizes the whole plan around locked choices.
 
 ## Development context
 
@@ -112,15 +112,17 @@ Interactive documentation is at `/docs`, and [tests/test.http](tests/test.http) 
 | GET | `/gardens/{id}/plantings` | Garden history, optionally `year_from` / `year_to` |
 | PUT, DELETE | `/plantings/{id}` | Edit or remove a history entry |
 | GET, POST | `/plans` | List a garden's plans (`?garden_id=`); create one plan per garden and year (409 if it exists) |
-| GET, PUT, DELETE | `/plans/{id}` | Plan with requested crops, placed counts and placements; rename; delete (its history stays) |
+| GET, PUT, DELETE | `/plans/{id}` | Plan with requested crops, placed counts, and placements with their current `assessment`; rename; delete (its history stays) |
 | POST | `/plans/{id}/complete`, `/plans/{id}/reopen` | Write placements to history and lock the plan; allow edits again |
 | POST | `/plans/{id}/crops` | Request a crop, or change its quantity |
 | DELETE | `/plans/{id}/crops/{crop_id}` | Remove a requested crop and its placements |
 | POST | `/plans/{id}/placements` | Place a crop in a bed (manual and locked by default) |
+| POST | `/plans/{id}/generate-layout` | **Fill remaining**: replace unlocked suggestions with a new layout; returns the plan and `unplaced` crops |
+| GET | `/plans/{id}/suitability?crop_id=` | Score, band and reasons for placing the crop in each active bed |
 | PUT, DELETE | `/plan-placements/{id}` | Move, re-time, lock or unlock; remove |
 | GET | `/health`, `/ready` | Process liveness; database connectivity (503 on failure) |
 
-Planting windows use `start_month` and `end_month` as `"YYYY-MM"` strings, covering at most 24 months. If they are omitted, the crop's default window for the given year is used. A planting's `year` must lie within its window, and a placement's window must include part of its plan's year. Only malformed input is rejected. Rotation and overlap concerns are guidance and never block a write ([D009](md/DECISIONS.md)). Completed plans are read-only (409) until reopened. Rate limits use process-local memory; configure shared storage before deploying multiple workers. The included Nginx proxy limits request bodies to 1 MiB.
+Planting windows use `start_month` and `end_month` as `"YYYY-MM"` strings, covering at most 24 months. If they are omitted, the crop's default window for the given year is used. A planting's `year` must lie within its window, and a placement's window must include part of its plan's year. Only malformed input is rejected. Rotation and overlap concerns are guidance and never block a write ([D009](md/DECISIONS.md)). Completed plans are read-only (409) until reopened. Assessments use the bands `very_suitable`, `suitable`, `possible`, `some_considerations` and `no_free_season` (timing clash only), with reason codes that clients translate. Rate limits use process-local memory; configure shared storage before deploying multiple workers. The included Nginx proxy limits request bodies to 1 MiB.
 
 ## Project layout
 
