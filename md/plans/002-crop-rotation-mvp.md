@@ -1,6 +1,6 @@
 # 002 — Crop rotation planner MVP
 
-- Status: active (Phases 1–2 complete, pending review; Phase 3 next)
+- Status: active (Phases 1–2 merged; Phase 3 next)
 - Updated: 2026-09-28
 - Branch / PR: `feat/phase1-backend-domain` ([PR #9](https://github.com/Niilop/cropcycle-app/pull/9)); `feat/phase2-layout` (stacked on it)
 - Related decisions: [D005–D014](../DECISIONS.md)
@@ -152,7 +152,14 @@ All private routes are authenticated and garden-owner scoped. They return 404 fo
 
 ## Questions and decisions
 
-Answered on 2026-09-28 (see [PROJECT.md](../PROJECT.md#product-answers-2026-09-28)): hosting stays open but scalable (D013), Finnish and English (D014), completing a plan writes history, and cross-year crops reserve the bed (D012). Still open: the hosting provider and distribution channel (Phase 5). For device testing on WSL2, use `npx expo start --tunnel` or WSL mirrored networking.
+Answered on 2026-09-28 (see [PROJECT.md](../PROJECT.md#product-answers-2026-09-28)): hosting stays open but scalable (D013), Finnish and English (D014), completing a plan writes history, and cross-year crops reserve the bed (D012). Still open: the hosting provider and distribution channel (Phase 5).
+
+Device testing on Windows/WSL2 (agreed approach):
+1. Expo web in the Windows browser, using the DevTools device toolbar for tablet and phone sizes and rotation.
+2. Android Studio emulator on Windows, running Expo Go at `exp://10.0.2.2:8081`, with the API at `10.0.2.2:8000`.
+3. Real devices with Expo Go and WSL mirrored networking (`--tunnel` as a fallback).
+
+The iOS simulator requires macOS, so use Expo Go on an iPhone or iPad. The app must read its API base URL from configuration, and CORS must allow the Expo web origin.
 
 ## Validation results
 
@@ -170,9 +177,9 @@ Answered on 2026-09-28 (see [PROJECT.md](../PROJECT.md#product-answers-2026-09-2
 
 ## Handoff / completion
 
-- Implemented: Phases 0–2. Phase 1 is in PR #9 (CI green). Phase 2 is on `feat/phase2-layout`, stacked on PR #9.
+- Implemented: Phases 0–2, merged to `main` via PR #9 and PR #10 (CI green).
 - Remaining work or blockers: Phases 3–5 (the Expo app and hardening). There are no blockers.
-- Next concrete step: merge PR #9, open the Phase 2 PR, then scaffold `mobile/` (Phase 3). Scaffolding needs new npm dependencies (Expo SDK, Expo Router, TanStack Query, Zustand, react-native-svg, gesture-handler, reanimated, bottom-sheet, secure-store, openapi-typescript).
+- Next concrete step: scaffold `mobile/` (Phase 3). Scaffolding needs new npm dependencies (Expo SDK, Expo Router, TanStack Query, Zustand, react-native-svg, gesture-handler, reanimated, bottom-sheet, secure-store, openapi-typescript).
 - Deviations from the plan:
   - The garden canvas size was dropped; it is derived from the beds.
   - There is one plan per garden and year (D012).

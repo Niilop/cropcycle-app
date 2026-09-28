@@ -2,7 +2,7 @@
 
 ## Current state
 
-CropCycle's backend is implemented. Phase 1 (domain) is in [PR #9](https://github.com/Niilop/cropcycle-app/pull/9), with CI green. Phase 2 (scoring and **Fill remaining**) is on `feat/phase2-layout`, stacked on it. Together they provide:
+CropCycle's backend is implemented and merged to `main` ([PR #9](https://github.com/Niilop/cropcycle-app/pull/9) domain, [PR #10](https://github.com/Niilop/cropcycle-app/pull/10) scoring and **Fill remaining**; CI green). It provides:
 
 - a seeded en/fi crop catalogue;
 - owner-scoped gardens, beds (archived rather than deleted) and planting history, with windows that can cross the new year;
@@ -13,7 +13,7 @@ The template's example features are removed. The Vite web frontend is a temporar
 
 ## Active work
 
-[002 — Crop rotation planner MVP](plans/002-crop-rotation-mvp.md): Phases 1–2 are complete and awaiting review. Phase 3 (Expo app foundation) is next.
+[002 — Crop rotation planner MVP](plans/002-crop-rotation-mvp.md): Phases 1–2 are complete and merged. Phase 3 (Expo app foundation) is next. Crop data review is deferred until after the MVP (see [PROJECT.md](PROJECT.md#later-crop-data-quality)).
 
 ## Blockers and open questions
 
@@ -25,4 +25,4 @@ See [plan 002 validation results](plans/002-crop-rotation-mvp.md#validation-resu
 
 ## Next step
 
-Review and merge PR #9, then the Phase 2 PR. After that, scaffold `mobile/` (Phase 3), which adds the Expo and React Native npm dependencies listed in the plan's handoff.
+Scaffold `mobile/` (Phase 3), which adds the Expo and React Native npm dependencies listed in the plan's handoff. Start with web-build viewing, then the Android emulator and Expo Go on devices (see the device-testing notes in the plan).

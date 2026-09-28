@@ -46,6 +46,15 @@ Out of scope for the MVP: mixed crops within one bed at the same time, graphical
 - Completing a plan copies its placements into planting history.
 - Crops that occupy a bed across the new year, such as autumn-planted garlic, must be modelled so that they reserve the bed during that time (D012).
 
+## Later: crop data quality
+
+The seed catalogue is accepted as the MVP baseline. The owner wrote its values from general horticultural knowledge; they are not from a sourced database.
+- Families are reliable, and rotation gaps are standard advice.
+- Growing months are rough southern and central Finland estimates.
+- Companion pairs are weakly evidenced, so their effect on scores is capped.
+
+After the MVP, review better sources: Finnish sowing calendars, Puutarhaliitto, Luke, and openly licensed crop datasets (check licences before importing). Possible additions: regional windows, a nutrient-demand (feeding) rotation group, perennials, and green manure. Changes go through `catalog.json` and `make seed` (D007).
+
 ## Open product questions
 
 - The concrete hosting provider and app distribution channel (EAS builds, TestFlight, Play internal testing) can wait until Phase 5.
