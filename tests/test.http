@@ -1,0 +1,64 @@
+@baseUrl = http://127.0.0.1:8000
+@token = paste-token-here
+@itemId = 1
+
+### Register
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{"email": "developer@example.com", "username": "developer", "password": "example-password-123"}
+
+### Login
+POST {{baseUrl}}/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=developer&password=example-password-123
+
+### Profile
+GET {{baseUrl}}/auth/me
+Authorization: Bearer {{token}}
+
+### Example
+POST {{baseUrl}}/example/
+Content-Type: application/json
+
+{"name": "Developer", "task": "Test the API"}
+
+### Background example (poll /jobs/{job_id} with the returned ID)
+POST {{baseUrl}}/example/async
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"name": "Developer", "task": "Test a background job"}
+
+### Create an item (use the returned ID below)
+POST {{baseUrl}}/items
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"title": "An idea", "description": "A few details"}
+
+### List your items
+GET {{baseUrl}}/items?limit=20&offset=0
+Authorization: Bearer {{token}}
+
+### Read an item
+GET {{baseUrl}}/items/{{itemId}}
+Authorization: Bearer {{token}}
+
+### Replace an item
+PUT {{baseUrl}}/items/{{itemId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"title": "Updated idea", "description": ""}
+
+### Delete an item
+DELETE {{baseUrl}}/items/{{itemId}}
+Authorization: Bearer {{token}}
+
+### Liveness
+GET {{baseUrl}}/health
+
+### Database readiness
+GET {{baseUrl}}/ready
