@@ -19,6 +19,7 @@ Open <http://localhost:5173>. Vite forwards `/api/*` to `http://127.0.0.1:8000/*
 - Public overview.
 
 This web frontend is a temporary shell: planning happens in the Expo app, which replaces it in [plan 002](../md/plans/002-crop-rotation-mvp.md) Phase 5.
+
 - Registration and login using the existing API.
 - Protected account and gardens pages, with return-to-page after login.
 - A gardens list with a create form.

@@ -158,7 +158,7 @@ Answered on 2026-09-28 (see [PROJECT.md](../PROJECT.md#product-answers-2026-09-2
 | --- | --- | --- |
 | Phase 0 docs: local link check and `git diff --check` | Pass (0 broken links) | Documentation only |
 | `ruff check .`, `ruff format --check .` | Pass | Phase 1 working tree |
-| `pytest` | 64 passed | SQLite; includes the migration chain 0001→0003, downgrade to base, and seed idempotence |
+| `pytest` | 64 passed on Python 3.12 and 3.14 | SQLite; includes the migration chain 0001→0003, downgrade to base, and seed idempotence. The first CI run failed on a migration annotation that only Python 3.14 skips evaluating; it is fixed, and 3.12 now runs locally too. |
 | PostgreSQL migration checks | Pass: `upgrade 0002`, `upgrade head`, `alembic check` (no changes), seed ×2 (second run adds nothing), cascade and `SET NULL` behaviour, `downgrade base`, `upgrade head`, `alembic check` | Embedded **PostgreSQL 16** via `pgserver` in an isolated uv environment (no Docker or local server available). CI runs PostgreSQL 18. |
 | Frontend `lint`, `format:check`, `build`, `npm test` | Pass; 10 browser tests (desktop and mobile) | Mocked API |
 | Smoke spec against a real stack | Pass | Embedded PostgreSQL 16, migrated and seeded, with uvicorn and the Vite proxy. **Not** run through Nginx/Docker: `make smoke` needs Docker, which this WSL distro lacks. CI runs it. |

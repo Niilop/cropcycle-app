@@ -22,7 +22,7 @@ def timestamps() -> list[sa.Column]:
     ]
 
 
-def window() -> list[sa.SchemaItem]:
+def window() -> list[sa.Column]:
     return [
         sa.Column("start_month", sa.Date(), nullable=False),
         sa.Column("end_month", sa.Date(), nullable=False),
