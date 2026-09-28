@@ -60,6 +60,34 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npm test
 
+  mobile:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+        with:
+          version: '0.12.11'
+          python-version: '3.14'
+          enable-cache: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+      - run: uv sync --all-packages --locked
+        working-directory: .
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run typecheck
+      - run: npm run test:unit
+      - run: npm run api:check
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+
   smoke:
     runs-on: ubuntu-latest
     timeout-minutes: 15

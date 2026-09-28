@@ -2,7 +2,7 @@
 
 ## Environment and setup
 
-Follow the root [setup instructions](../README.md#local-development) and [frontend guide](../frontend/README.md). Use Python 3.12+ through `uv` and Node 24 with npm. The maintainer's environment is Linux/WSL2, with PostgreSQL and Redis containers in `~/code/devstack`; that location is not required on other machines, and this application does not use Redis.
+Follow the root [setup instructions](../README.md#local-development) and [frontend guide](../frontend/README.md). Use Python 3.12+ through `uv` and Node 24 with npm. The mobile app is described in [mobile/README.md](../mobile/README.md), including browser, Android-emulator and Expo Go testing from WSL2. The maintainer's environment is Linux/WSL2, with PostgreSQL and Redis containers in `~/code/devstack`; that location is not required on other machines, and this application does not use Redis.
 
 Use `make setup` to install locked dependencies and create a private `.env` with a generated secret, preserving an existing file. Configure a dedicated database, run `make migrate` and `make seed` (the crop catalogue; safe to repeat), then `make dev` to start both servers. The dev helper checks settings, occupied ports, and migration revision, and stops both servers together. Separate `make backend` and `make frontend` commands are also available. Repository-root settings are loaded independently of the backend's working directory; the frontend proxy override lives in `frontend/.env.local`. The combined dev command intentionally selects the local API.
 
@@ -12,14 +12,14 @@ Use `make setup` to install locked dependencies and create a private `.env` with
 2. For substantial work, define the outcome, scope, and acceptance checks in a [plan](plans/TEMPLATE.md). Record unresolved choices without treating them as approved requirements.
 3. Follow the existing route → service → model structure. Add and register routes in `create_app`; preserve authentication and owner filtering on private resources (see `backend/api/dependencies.py`). Services raise `DomainError` subclasses for 404/409/422 outcomes. Agronomic data belongs in `backend/seed/catalog.json`, never in client code.
 4. For schema changes, create and inspect an Alembic migration. Consider existing records, defaults, constraints, and what a downgrade can actually restore. Do not rewrite already applied migrations.
-5. Keep Pydantic schemas, frontend API types, forms, and request examples consistent when contracts change.
+5. Keep Pydantic schemas, frontend API types, forms, and request examples consistent when contracts change. For the mobile app, run `npm --prefix mobile run api:types` and commit the regenerated `mobile/src/api/` files; `tests/test_openapi_snapshot.py` and `api:check` fail when they are stale. Use `npx expo install` for Expo dependencies so versions match the SDK.
 6. Run checks appropriate to the changed behavior. Update relevant context and leave a concise handoff when work finishes or pauses.
 
 Use standard-library functionality and existing packages before adding dependencies. Python public functions need type hints; Ruff controls Python style. Frontend code uses TypeScript, ESLint, and Prettier. Keep business-specific additions in the new project rather than expanding this template speculatively.
 
 ## Validation
 
-`make check` runs both suites below; `make check-backend` and `make check-frontend` run one side. Run Python checks from the repository root after `uv sync --all-packages --locked`:
+`make check` runs all suites below; `make check-backend`, `make check-frontend` and `make check-mobile` run one part. Mobile checks (lint, format, typecheck, Node unit tests, API-type freshness, Playwright against a fake API) are listed in [mobile/README.md](../mobile/README.md#checks). Run Python checks from the repository root after `uv sync --all-packages --locked`:
 
 ```bash
 uv run --no-sync ruff check .

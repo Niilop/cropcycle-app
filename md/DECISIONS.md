@@ -82,6 +82,7 @@ Record choices that future maintainers would otherwise have to rediscover: bound
 - Date: 2026-09-28.
 - Decision: generate TypeScript types for the mobile app from FastAPI's OpenAPI schema with `openapi-typescript`, a development dependency. A check fails when the generated file is stale.
 - Reason: the template mirrors types by hand, which drifts as the domain API grows.
+- Refinement (Phase 3): `openapi-typescript` 7 declares a TypeScript 5 peer while the app uses TypeScript 6, so the generator runs through a pinned `npx` environment (`mobile/scripts/generate-api-types.mjs`) instead of being a project dependency. The OpenAPI JSON is committed next to the types and checked by a backend test.
 
 ## D011 — Tap-first editing, drag as an accelerator
 
@@ -117,6 +118,20 @@ Record choices that future maintainers would otherwise have to rediscover: bound
 - Date: 2026-09-28.
 - Decision: store catalogue display names as `names: {"en": ..., "fi": ...}` JSON; both are required in the seed file. The API returns all names, and the client chooses by the user's locale and falls back to English. Mobile UI strings live in per-locale message files, and reason codes are translated client-side.
 - Alternatives: separate translation tables, which are heavier than two locales need but can be migrated to later.
+
+## D015 — Keep the mobile app's dependency footprint small
+
+- Status: accepted.
+- Date: 2026-09-28.
+- Context: plan 002 proposed `react-native-svg`, `react-native-gesture-handler`, `reanimated` and `@gorhom/bottom-sheet`. Each adds native modules, web quirks and upgrade coupling to the Expo SDK.
+- Decision:
+  - The garden canvas uses plain `View`s scaled from metres.
+  - Dragging and resizing use React Native's built-in `PanResponder`, which works on web and native.
+  - The bed editor is a simple panel: beside the canvas on screens at least 900 px wide, below it on phones.
+  - Pure logic (months, geometry, translations) is tested with Node's built-in test runner rather than Jest.
+  - Browser tests use Playwright against the exported web build and a fake API.
+- Alternatives: the libraries above, which bring smoother native gestures and physics-based sheets.
+- Consequences: dragging runs on the JavaScript thread, which is fine for tens of beds. Pinch-zoom and animated sheets are not available. Any of these libraries can be added later without changing the data flow.
 
 ## Adding a decision
 
