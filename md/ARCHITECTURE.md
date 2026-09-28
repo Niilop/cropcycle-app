@@ -1,6 +1,6 @@
 # Implemented architecture
 
-This describes the template as it exists. Proposed additions belong in [plans](plans/README.md) until implemented.
+This describes the template as it exists. The CropCycle domain and mobile app are planned in [plan 002](plans/002-crop-rotation-mvp.md#design) and are not implemented yet. Update this file as each phase lands. Proposed additions belong in [plans](plans/README.md) until implemented.
 
 ## Components and request flow
 
