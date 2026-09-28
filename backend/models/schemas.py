@@ -235,6 +235,14 @@ class PlacementWrite(OptionalWindow):
     locked: bool = True
 
 
+class AssessmentResponse(ReadModel):
+    """Suitability as a 0–100 score, a band and stable reason codes (translated by clients)."""
+
+    score: int
+    band: str
+    reasons: list[str]
+
+
 class PlacementResponse(ReadModel):
     id: int
     plan_id: int
@@ -244,6 +252,8 @@ class PlacementResponse(ReadModel):
     end_month: YearMonth
     locked: bool
     source: PlacementSource
+    # Present in plan details; null for placements in archived beds.
+    assessment: AssessmentResponse | None = None
 
 
 class PlanResponse(ReadModel):
@@ -259,3 +269,21 @@ class PlanResponse(ReadModel):
 class PlanDetailResponse(PlanResponse):
     crops: list[PlannedCropResponse]
     placements: list[PlacementResponse]
+
+
+class UnplacedResponse(BaseModel):
+    crop_id: int
+    count: int
+    reason: str = "no_free_season"
+
+
+class GenerateLayoutResponse(BaseModel):
+    plan: PlanDetailResponse
+    unplaced: list[UnplacedResponse]
+
+
+class BedSuitabilityResponse(BaseModel):
+    bed_id: int
+    start_month: YearMonth
+    end_month: YearMonth
+    assessment: AssessmentResponse

@@ -1,8 +1,8 @@
 # 002 — Crop rotation planner MVP
 
-- Status: active (Phase 1 complete, pending review; Phase 2 next)
+- Status: active (Phases 1–2 complete, pending review; Phase 3 next)
 - Updated: 2026-09-28
-- Branch / PR: `feat/phase1-backend-domain`
+- Branch / PR: `feat/phase1-backend-domain` ([PR #9](https://github.com/Niilop/cropcycle-app/pull/9)); `feat/phase2-layout` (stacked on it)
 - Related decisions: [D005–D014](../DECISIONS.md)
 - Source: [requirements v0](../requirements/mvp-v0.md)
 
@@ -81,7 +81,8 @@ Reason codes are stable strings that the mobile app maps to short labels: `good_
 1. Build slots from free month windows in active beds, after subtracting fixed placements.
 2. Greedy pass: place the most constrained demand first, meaning the fewest good slots.
 3. Local improvement: pairwise swap and move passes over suggested placements. Stop when nothing improves or when a time budget of about 1 s is reached.
-4. The total objective is the sum of scores. Ties are broken by stable IDs, so identical input gives identical output.
+4. **Insert** step: place a leftover crop by evicting conflicting suggestions, then re-place the evicted crops and any other leftovers.
+5. Layouts are ranked by the number of requested crops placed, then by the sum of scores over all of the plan's placements (fixed ones included, since neighbours affect them). Ties are broken by stable IDs, so identical input gives identical output while the time budget is not hit.
 
 Demand that cannot be placed is returned as `unplaced: [{crop_id, count, reason}]` with HTTP 200, not as an error. The endpoint replaces the replaceable placements and returns the new placements in one transaction.
 
@@ -92,7 +93,7 @@ Demand that cannot be placed is returned as `unplaced: [{crop_id, count, reason}
 - `POST /plans/{id}/crops` upserts by `crop_id`; `DELETE /plans/{id}/crops/{crop_id}` removes it
 - `GET /gardens/{id}/plantings?year_from=&year_to=` (garden-wide history view)
 - `GET /plans/{id}/suitability?crop_id=` returns per-bed `{bed_id, score, band, reasons}` for colour-coding.
-- `POST /plans/{id}/evaluate` recomputes scores for all placements after manual edits. It is also run implicitly by the placement write endpoints.
+- Scores are computed when a plan is read (`GET /plans/{id}` returns each placement's `assessment`), not stored. They are never stale and need no `evaluate` endpoint or score columns.
 
 All private routes are authenticated and garden-owner scoped. They return 404 for foreign records.
 
@@ -121,14 +122,15 @@ All private routes are authenticated and garden-owner scoped. They return 404 fo
 - [x] CRUD routes from requirements §9 plus the additions above, including plan completion and reopening. Covered by ownership, validation, overlap-acceptance and completion tests.
 - [x] Checks: see validation results.
 
-### Phase 2 — Scoring and auto-layout
+### Phase 2 — Scoring and auto-layout (complete, pending review)
 
-- [ ] Build the pure `layout` module with unit tests covering rotation gaps, the family fallback, adjacency, the timing boundary, and determinism.
-- [ ] Add the `generate-layout`, `suitability`, and `evaluate` endpoints.
-- [ ] Checks:
+- [x] Pure `backend/services/layout/` package (`model`, `scoring`, `solver`) with unit tests covering rotation gaps and weights, the family fallback, adjacency, month handover, neighbours, whole-plan optimization and determinism.
+- [x] `POST /plans/{id}/generate-layout` and `GET /plans/{id}/suitability?crop_id=`. Plan details include a fresh `assessment` (score, band, reasons) for each placement.
+- [x] Checks:
   - Locked and manual placements are never changed.
-  - Unplaceable demand is reported.
-  - A 50-bed and 30-crop fixture completes in under 2 s.
+  - Unplaceable demand is reported as `unplaced`.
+  - Next year's draft plan reserves this autumn.
+  - A 50-bed, 30-crop fixture runs in well under 2 s (0.37 s for two runs).
 
 ### Phase 3 — Mobile foundation
 
@@ -157,6 +159,9 @@ Answered on 2026-09-28 (see [PROJECT.md](../PROJECT.md#product-answers-2026-09-2
 | Check / command | Result | Commit or relevant context |
 | --- | --- | --- |
 | Phase 0 docs: local link check and `git diff --check` | Pass (0 broken links) | Documentation only |
+| GitHub CI for Phase 1 (PR #9) | Pass: backend on 3.12 and 3.14 (including PostgreSQL 18 migration checks), frontend, `make smoke` via Docker and Nginx | Commit `7bf7f58`. The first run failed on the 3.12 annotation bug, which is fixed. |
+| Phase 2 `pytest` | 84 passed on Python 3.12 and 3.14 | 15 layout unit tests and 5 layout API tests added |
+| Phase 2 smoke spec, including suitability and **Fill remaining** | Pass | Embedded PostgreSQL 16 with uvicorn and the Vite proxy; CI will run it through Docker |
 | `ruff check .`, `ruff format --check .` | Pass | Phase 1 working tree |
 | `pytest` | 64 passed on Python 3.12 and 3.14 | SQLite; includes the migration chain 0001→0003, downgrade to base, and seed idempotence. The first CI run failed on a migration annotation that only Python 3.14 skips evaluating; it is fixed, and 3.12 now runs locally too. |
 | PostgreSQL migration checks | Pass: `upgrade 0002`, `upgrade head`, `alembic check` (no changes), seed ×2 (second run adds nothing), cascade and `SET NULL` behaviour, `downgrade base`, `upgrade head`, `alembic check` | Embedded **PostgreSQL 16** via `pgserver` in an isolated uv environment (no Docker or local server available). CI runs PostgreSQL 18. |
@@ -165,11 +170,13 @@ Answered on 2026-09-28 (see [PROJECT.md](../PROJECT.md#product-answers-2026-09-2
 
 ## Handoff / completion
 
-- Implemented: Phases 0–1. The backend domain, catalogue, CRUD and plan completion are on `feat/phase1-backend-domain`.
-- Remaining work or blockers: Phases 2–5. `make smoke` and the PostgreSQL 18 checks have not run locally for lack of Docker; confirm them in CI after pushing.
-- Next concrete step: push the branch and open a PR so that CI covers Docker smoke and PostgreSQL 18. Then start Phase 2 with the pure `layout` module (scoring inputs as dataclasses, occupancy including neighbouring years' plans) and its unit tests.
+- Implemented: Phases 0–2. Phase 1 is in PR #9 (CI green). Phase 2 is on `feat/phase2-layout`, stacked on PR #9.
+- Remaining work or blockers: Phases 3–5 (the Expo app and hardening). There are no blockers.
+- Next concrete step: merge PR #9, open the Phase 2 PR, then scaffold `mobile/` (Phase 3). Scaffolding needs new npm dependencies (Expo SDK, Expo Router, TanStack Query, Zustand, react-native-svg, gesture-handler, reanimated, bottom-sheet, secure-store, openapi-typescript).
 - Deviations from the plan:
   - The garden canvas size was dropped; it is derived from the beds.
-  - Several plans per garden and year were replaced by one per garden and year (D012).
+  - There is one plan per garden and year (D012).
   - `POST /plans/{id}/crops` upserts, and `DELETE /plans/{id}/crops/{crop_id}` is keyed by crop.
   - Completed plans are read-only until reopened.
+  - Scores are computed on read, with no stored columns or `evaluate` endpoint.
+  - The solver ranks layouts by crops placed before score and adds an insert-with-eviction step.

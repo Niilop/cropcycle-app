@@ -79,6 +79,14 @@ Content-Type: application/json
 GET {{baseUrl}}/plans/{{planId}}
 Authorization: Bearer {{token}}
 
+### Colour beds for a crop: score, band and reasons per bed
+GET {{baseUrl}}/plans/{{planId}}/suitability?crop_id={{cropId}}
+Authorization: Bearer {{token}}
+
+### Fill remaining (keeps manual and locked placements)
+POST {{baseUrl}}/plans/{{planId}}/generate-layout
+Authorization: Bearer {{token}}
+
 ### Complete the plan and write its placements to history
 POST {{baseUrl}}/plans/{{planId}}/complete
 Authorization: Bearer {{token}}

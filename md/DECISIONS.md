@@ -65,6 +65,9 @@ Record choices that future maintainers would otherwise have to rediscover: bound
 - Decision: implement scoring and auto-layout as a pure Python module (`backend/services/layout/`) that works on dataclasses with no database access. It uses a greedy placement pass with the most constrained demand first, followed by swap/move local improvement under a time budget, and stable tie-breaking. `generate-layout` runs synchronously and may replace only placements that are `source=suggested` and `locked=false`.
 - Reason: this meets "optimize the whole plan" and "never change manual or locked choices" without OR-Tools. The pure interface allows a constraint solver to be swapped in later. Deterministic output keeps behaviour predictable for users and tests.
 - Consequences: results are good rather than optimal. Large gardens are bounded by the time budget.
+- Refinement (2026-09-28, Phase 2):
+  - Layouts are ranked by the number of requested crops placed before total score, and an insert-with-eviction step recovers placements that greedy ordering misses.
+  - Assessments are computed when a plan is read rather than stored, so they cannot go stale after edits, catalogue updates or history changes.
 
 ## D009 — Guidance, not enforcement
 

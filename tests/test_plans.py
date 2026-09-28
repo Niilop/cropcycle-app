@@ -220,4 +220,6 @@ def test_plan_ownership(
     ]:
         assert client.request(method, url, headers=other_headers, json=json).status_code == 404
         assert client.request(method, url, json=json).status_code == 401
-    assert client.get(path, headers=auth_headers).json()["placements"][0] == placement
+    stored = client.get(path, headers=auth_headers).json()["placements"][0]
+    assert stored["assessment"] is not None
+    assert stored | {"assessment": None} == placement
