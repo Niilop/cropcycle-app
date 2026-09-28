@@ -10,17 +10,17 @@ export function Layout() {
       </a>
       <header className="site-header">
         <div className="header-inner">
-          <NavLink className="brand" to="/" aria-label="Workspace home">
+          <NavLink className="brand" to="/" aria-label="CropCycle home">
             <span className="brand-mark" aria-hidden="true">
-              W
+              C
             </span>
-            Workspace
+            CropCycle
           </NavLink>
           <nav aria-label="Main navigation">
             <NavLink to="/" end>
               Overview
             </NavLink>
-            <NavLink to="/items">Items</NavLink>
+            <NavLink to="/gardens">Gardens</NavLink>
             {session && <NavLink to="/account">Account</NavLink>}
           </nav>
           <div className="session-actions">
@@ -39,7 +39,7 @@ export function Layout() {
       <main id="main" tabIndex={-1}>
         <Outlet />
       </main>
-      <footer className="site-footer">Workspace · Application template</footer>
+      <footer className="site-footer">CropCycle · Crop rotation planner</footer>
     </>
   )
 }

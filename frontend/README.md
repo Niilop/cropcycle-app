@@ -16,10 +16,13 @@ Open <http://localhost:5173>. Vite forwards `/api/*` to `http://127.0.0.1:8000/*
 
 ## Included
 
-- Public overview and example request form.
+- Public overview.
+
+This web frontend is a temporary shell: planning happens in the Expo app, which replaces it in [plan 002](../md/plans/002-crop-rotation-mvp.md) Phase 5.
+
 - Registration and login using the existing API.
-- Protected account and items pages, with return-to-page after login.
-- Private items with create/edit/delete forms and pagination.
+- Protected account and gardens pages, with return-to-page after login.
+- A gardens list with a create form.
 - Loading, empty, validation, network error, and expired-session handling.
 - Responsive styles and accessible labels, navigation, and form status messages.
 
@@ -32,13 +35,13 @@ src/
   api/          Fetch wrapper, error parsing, response types
   auth/         Session context/provider and route guard
   components/   Shared application layout
-  pages/        Overview, login/register, account, items
+  pages/        Overview, login/register, account, gardens
   App.tsx       Route definitions
   main.tsx      Application entry point
   styles.css    Shared styles and responsive layout
 ```
 
-Add a page under `src/pages/` and register it in `App.tsx`. Place private routes under `RequireAuth`. Use `useAuth().request` for authenticated calls so expired credentials are handled consistently. Use `apiRequest` for public calls. Both accept normal fetch options, including abort signals. The items page demonstrates JSON writes and paginated reads without a separate state or form library.
+Add a page under `src/pages/` and register it in `App.tsx`. Place private routes under `RequireAuth`. Use `useAuth().request` for authenticated calls so expired credentials are handled consistently. Use `apiRequest` for public calls. Both accept normal fetch options, including abort signals. The gardens page demonstrates authenticated reads and JSON writes without a separate state or form library.
 
 Response interfaces in `src/api/types.ts` mirror the backend schemas. Keep them in sync when changing API contracts; the fetch wrapper does not perform runtime schema validation.
 

@@ -1,13 +1,17 @@
-# FastAPI Template
+# CropCycle
 
-A FastAPI backend with PostgreSQL, authentication, a small CRUD example, and a React + TypeScript frontend. Python 3.12+ dependencies use uv; the frontend uses Node 24 and npm.
+A mobile-first crop rotation planner. Gardeners draw their beds, record what grew where, list next season's crops, place the ones they care about, and let the app suggest the rest. The backend is FastAPI with PostgreSQL. Python 3.12+ dependencies use uv; the web frontend uses Node 24 and npm. The Expo mobile app is planned in [plan 002](md/plans/002-crop-rotation-mvp.md).
 
-- Registration and login by email or username, Argon2 password hashing, expiring JWTs.
-- SQLAlchemy models and Alembic migrations.
-- User-owned items with a title, description, timestamps, and paginated CRUD endpoints.
-- Rate limits on registration, login, item writes, and background job submission.
-- A route/service example and an in-process background job example.
-- Liveness and database readiness endpoints, configurable CORS, automated tests.
+Implemented so far:
+
+- Registration and login by email or username, with Argon2 password hashing and expiring JWTs (30 days by default for mobile sign-in).
+- A shared crop catalogue with 43 crops, families, rotation rules and companion rules. Names are in English and Finnish, loaded from versioned seed data.
+- Owner-scoped gardens with rectangular beds (archived rather than deleted), planting history, and yearly plans with requested crops, locked manual placements, and completion into history.
+- Year-month planting windows that can cross the new year, for example garlic from October to July.
+- Rate limits on registration, login and writes; liveness and readiness endpoints; configurable CORS; automated tests.
+- A minimal web frontend (sign-in and gardens) kept until the Expo app replaces it.
+
+Rotation scoring and **Fill remaining** are planned for Phase 2.
 
 ## Development context
 
@@ -25,10 +29,11 @@ This installs locked Python/frontend dependencies and creates `.env` with a gene
 
 ```bash
 make migrate
+make seed
 make dev
 ```
 
-`make dev` checks the settings, database migration revision, and ports, then starts both servers. Ctrl+C or either server exiting stops both. It points Vite at the local backend even if `frontend/.env.local` specifies a different proxy; use the separate commands below when working with a remote API. It never applies migrations automatically.
+`make dev` checks the settings, database migration revision, and ports, then starts both servers. Ctrl+C or either server exiting stops both. It points Vite at the local backend even if `frontend/.env.local` specifies a different proxy; use the separate commands below when working with a remote API. It never applies migrations automatically. `make seed` loads or updates the crop catalogue; it is safe to repeat.
 
 Open <http://localhost:5173> for the UI and <http://127.0.0.1:8000/docs> for the API. Registration requires a password of 12–128 characters and a username of 3–100 letters, digits, dots, underscores, or hyphens. Login uses form fields `username` and `password`; `username` can contain either the username or email.
 
@@ -39,6 +44,7 @@ If another project uses the default ports, run `make dev BACKEND_PORT=18000 FRON
 | `make setup` | Install locked dependencies and safely initialize `.env` |
 | `make dev` | Start and stop both local servers together |
 | `make migrate` | Apply migrations to the configured database |
+| `make seed` | Load or update the crop catalogue (idempotent) |
 | `make check` | Backend checks plus frontend lint, formatting, build, and mocked browser tests |
 | `make check-backend` / `make check-frontend` | Run checks for one side |
 | `make smoke` | Test the real full stack in disposable Docker containers |
@@ -51,10 +57,11 @@ uv run --no-sync python -m scripts.setup_env
 npm --prefix frontend ci
 # Configure DATABASE_URL in .env before migrating:
 uv run --no-sync alembic -c backend/alembic.ini upgrade head
+uv run --no-sync python -m backend.seed
 uv run --no-sync python -m scripts.dev
 ```
 
-To install only backend dependencies, use `uv sync --package backend`. Vite forwards `/api/*` requests to the backend on port 8000, so no CORS change is needed. The UI includes registration/login, protected account and items pages, create/edit/delete forms, and the example endpoint. Tokens stay in memory; reloading the page signs you out. See [frontend/README.md](frontend/README.md) for configuration, structure, and browser tests.
+To install only backend dependencies, use `uv sync --package backend`. Vite forwards `/api/*` requests to the backend on port 8000, so no CORS change is needed. The web UI includes registration/login, a protected account page, and a minimal gardens page. Tokens stay in memory; reloading the page signs you out. See [frontend/README.md](frontend/README.md) for configuration, structure, and browser tests.
 
 ## Configuration
 
@@ -65,7 +72,7 @@ The backend reads the repository-root `.env` regardless of the working directory
 | `DATABASE_URL` | Required; `postgresql+psycopg://user:password@host:5432/database` |
 | `SECRET_KEY` | Required; random secret of at least 32 bytes |
 | `DEBUG` | `false` |
-| `ACCESS_TOKEN_EXPIRE_MINUTES` | `30` |
+| `ACCESS_TOKEN_EXPIRE_MINUTES` | `43200` (30 days) |
 | `CORS_ORIGINS` | Empty; explicit comma-separated URLs or a JSON array |
 
 JWT signing uses HS256. Keep `.env` out of Git. Existing `postgresql://` URLs are normalized to use psycopg 3. URL-encode special characters in database credentials.
@@ -79,36 +86,41 @@ Set `.env`'s `DATABASE_URL` to an address reachable **from the container**. For 
 ```bash
 docker compose build
 docker compose run --rm backend alembic -c backend/alembic.ini upgrade head
+docker compose run --rm backend python -m backend.seed
 docker compose up -d
 # Include the React frontend on port 5173:
 docker compose --profile ui up --build -d
 ```
 
-Migrations are an explicit deployment step. Run them once before starting new application processes. The image does not enable hot reload.
+Migrations and seeding are explicit deployment steps. Run them once before starting new application processes. The image does not enable hot reload.
 
 ## API
 
+Interactive documentation is at `/docs`, and [tests/test.http](tests/test.http) has request examples. Every route except registration, login and health requires a bearer token. Private records are scoped to the signed-in user's gardens; missing and foreign records both return 404.
+
 | Method | Path | Purpose |
 | --- | --- | --- |
-| POST | `/auth/register` | Create user (201) |
-| POST | `/auth/login` | Issue bearer token |
+| POST | `/auth/register`, `/auth/login` | Create a user (201); issue a bearer token |
 | GET | `/auth/me` | Current user |
-| POST | `/example/` | Public route/service example |
-| POST | `/example/async` | Authenticated background example (202) |
-| GET | `/jobs/{job_id}` | Current user's job status/result |
-| POST | `/items` | Create an item (201) |
-| GET | `/items` | Current user's items and total count; `limit` (1–100, default 20), `offset` (default 0) |
-| GET | `/items/{item_id}` | Read an owned item |
-| PUT | `/items/{item_id}` | Replace an owned item's title and description |
-| DELETE | `/items/{item_id}` | Delete an owned item (204) |
-| GET | `/health` | Process liveness |
-| GET | `/ready` | Database connectivity (503 on failure) |
+| GET | `/crops`, `/crop-families`, `/rotation-rules`, `/companion-rules` | Shared catalogue (read-only) |
+| GET, POST | `/gardens` | List or create gardens |
+| GET, PUT, DELETE | `/gardens/{id}` | Garden with active beds (`?include_archived=true` for all); rename; delete everything in it |
+| POST | `/gardens/{id}/beds` | Add a bed (`name`, `x`, `y`, `width`, `height` in metres) |
+| PUT, DELETE | `/beds/{id}` | Replace geometry and name; archive (history is kept) |
+| POST | `/beds/{id}/restore` | Un-archive a bed |
+| GET, POST | `/beds/{id}/plantings` | Bed history; record a planting |
+| GET | `/gardens/{id}/plantings` | Garden history, optionally `year_from` / `year_to` |
+| PUT, DELETE | `/plantings/{id}` | Edit or remove a history entry |
+| GET, POST | `/plans` | List a garden's plans (`?garden_id=`); create one plan per garden and year (409 if it exists) |
+| GET, PUT, DELETE | `/plans/{id}` | Plan with requested crops, placed counts and placements; rename; delete (its history stays) |
+| POST | `/plans/{id}/complete`, `/plans/{id}/reopen` | Write placements to history and lock the plan; allow edits again |
+| POST | `/plans/{id}/crops` | Request a crop, or change its quantity |
+| DELETE | `/plans/{id}/crops/{crop_id}` | Remove a requested crop and its placements |
+| POST | `/plans/{id}/placements` | Place a crop in a bed (manual and locked by default) |
+| PUT, DELETE | `/plan-placements/{id}` | Move, re-time, lock or unlock; remove |
+| GET | `/health`, `/ready` | Process liveness; database connectivity (503 on failure) |
 
-Item writes accept JSON with `title` (1–255 characters after trimming) and optional `description` (up to 5,000 characters, default empty). `PUT` replaces both fields; omitting `description` clears it. The server assigns the owner from the signed-in user; clients cannot supply or change it. Missing items and other users' items both return 404. Lists return `{ "items": [...], "total": 0 }`, ordered by newest ID first.
-
-Background jobs use FastAPI's in-process tasks and a separate database session. They are suitable for short tasks; process termination can leave jobs pending or running. Add a durable queue when your application needs retries or recovery. Rate limits use process-local memory; configure shared storage before deploying multiple workers. The included Nginx proxy limits request bodies to 1 MiB. `/ready` checks database connectivity, not migration status.
-
-Items demonstrate private data ownership, not a universal data model. Rename and extend the example for notes, saved collections, or planned sets. Shared data (such as an admin-ingested music catalog) should have its own models and write permissions; users can reference shared records from their private collections. File storage and expensive analysis belong in separate features when needed.
+Planting windows use `start_month` and `end_month` as `"YYYY-MM"` strings, covering at most 24 months. If they are omitted, the crop's default window for the given year is used. A planting's `year` must lie within its window, and a placement's window must include part of its plan's year. Only malformed input is rejected. Rotation and overlap concerns are guidance and never block a write ([D009](md/DECISIONS.md)). Completed plans are read-only (409) until reopened. Rate limits use process-local memory; configure shared storage before deploying multiple workers. The included Nginx proxy limits request bodies to 1 MiB.
 
 ## Project layout
 
@@ -117,7 +129,8 @@ backend/
   api/endpoints/    HTTP routes and dependencies
   core/            Settings, database sessions, rate limiting
   models/          ORM models and request/response schemas
-  services/        Authentication, item CRUD, background jobs
+  services/        Authentication, gardens/history, plans, catalogue, planting windows
+  seed/            Crop catalogue data (catalog.json) and its idempotent loader
   alembic/         Schema migrations
   main.py          App factory and health endpoints
 frontend/src/      React pages, routing, session state, and API client
@@ -127,7 +140,7 @@ scripts/           Setup, development server, and smoke-test helpers
 tests/             Isolated automated tests and REST client examples
 ```
 
-Add models in `backend/models/database.py`, request/response schemas in `schemas.py`, business logic in `services/`, and routers in `api/endpoints/`. Register new routers in `create_app()`.
+Domain errors raised by services (`services/errors.py`) are mapped to 404/409/422 responses in `create_app()`. Add models in `backend/models/database.py`, request/response schemas in `schemas.py`, business logic in `services/`, and routers in `api/endpoints/`. Register new routers in `create_app()`.
 
 ```bash
 uv run --no-sync alembic -c backend/alembic.ini revision --autogenerate -m "describe change"
@@ -136,9 +149,7 @@ uv run --no-sync alembic -c backend/alembic.ini upgrade head
 
 Review generated migrations before applying them.
 
-**Upgrading from the CSV template:** run `alembic upgrade head` using the command above. Migration `0002_items` converts existing catalog entries to items, preserving IDs, owners, names as titles, descriptions, and timestamps. It drops stored file paths and CSV profiling metadata. Back up those fields first if needed; downgrading recreates them with empty values. Existing files and Docker upload volumes are left untouched, but the app no longer uses them. Remove obsolete `DATA_DIR`, `MAX_UPLOAD_BYTES`, `MAX_DATASETS_PER_USER`, and `CLIENT_MAX_BODY_SIZE` settings from local configuration.
-
-**Older migration compatibility:** `0001_core` replaced the original pre-cleanup migration history. Do not apply or stamp that baseline over an installation from before the cleanup. Those databases need a separate migration/export plan; their password hashes and tokens are not compatible with the current authentication setup. Checking out these changes does not modify any existing database.
+**Migration history:** `0003_crop_domain` drops the template's example `items` and `background_jobs` tables without keeping their data; downgrading recreates them empty. Earlier revisions come from the template. `0001_core` replaced a pre-cleanup history and must not be stamped over such an installation.
 
 ## Checks
 
@@ -149,7 +160,7 @@ uv run --no-sync ruff format --check .
 uv run --no-sync pytest
 ```
 
-Backend tests use isolated SQLite databases, with no running API or external services. They cover ownership, validation, pagination, and migration data preservation. CI also checks migration upgrade, schema consistency, and downgrade on PostgreSQL. The frontend has separate build, lint, and browser checks:
+Backend tests use isolated SQLite databases, with no running API or external services. They cover ownership, validation, catalogue seeding, plan completion, and migrations. CI also checks migration upgrade, schema consistency, and downgrade on PostgreSQL. The frontend has separate build, lint, and browser checks:
 
 ```bash
 cd frontend
@@ -162,7 +173,7 @@ npm test
 
 ### Full-stack smoke test
 
-Run `make smoke` from the root with Docker Engine and Compose v2 available. It builds the production backend/frontend plus a browser runner, starts a separate PostgreSQL 18 database, applies migrations, and tests registration, login, persistence across reload, item CRUD, and cross-user isolation through Nginx. There are no mocked API calls.
+Run `make smoke` from the root with Docker Engine and Compose v2 available. It builds the production backend/frontend plus a browser runner, starts a separate PostgreSQL 18 database, applies migrations, and seeds the catalogue, and tests registration, login, persistence across reload, the garden/history/plan API, and cross-user isolation through Nginx. There are no mocked API calls.
 
 The standalone [compose.smoke.yaml](compose.smoke.yaml) publishes no host ports, reads no `.env`, and uses a unique Compose project per run. Database files live in container tmpfs. The script removes its containers, network, and volumes on success, failure, or interruption. It does not use or stop your development stack. Docker build cache/images are retained for later runs. Run one smoke command at a time per checkout because the artifact directory is shared.
 

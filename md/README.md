@@ -9,6 +9,7 @@ This folder is shared context for maintainers and coding agents. It describes th
 | [DEVELOPMENT.md](DEVELOPMENT.md) | Development workflow, commands, validation, troubleshooting | The way work is done changes |
 | [STATUS.md](STATUS.md) | Current work, active plan links, blockers, next step | Substantial work finishes or pauses |
 | [DECISIONS.md](DECISIONS.md) | Significant choices, reasons, consequences, superseded choices | A consequential decision is made |
+| [requirements/](requirements/mvp-v0.md) | Product owner's requirement statements, versioned and not edited afterwards | New requirements arrive |
 | [plans/](plans/README.md) | Scoped implementation plans with acceptance checks and results | A substantial task needs tracking |
 
 The root [README](../README.md) remains the setup and API reference. Link to existing explanations instead of maintaining duplicate versions. Source code and configuration establish implemented behavior; these documents explain intent and should be corrected when they disagree.

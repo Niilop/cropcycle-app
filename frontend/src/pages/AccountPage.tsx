@@ -9,7 +9,7 @@ export function AccountPage() {
       <div className="page-heading">
         <p className="eyebrow">Personal details</p>
         <h1>Your account</h1>
-        <p>The details associated with your workspace.</p>
+        <p>The details associated with your account.</p>
       </div>
       <section className="panel account-details" aria-label="Account details">
         <dl>

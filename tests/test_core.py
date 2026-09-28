@@ -12,7 +12,8 @@ def test_health_and_routes(client: TestClient) -> None:
     assert client.get("/ready").status_code == 200
     paths = client.get("/openapi.json").json()["paths"]
     assert not any(path.startswith(("/chat", "/rag", "/llm", "/metrics")) for path in paths)
-    assert client.post("/example/", json={"name": "Tester", "task": "test"}).status_code == 200
+    assert not any(path.startswith(("/items", "/example", "/jobs")) for path in paths)
+    assert {"/gardens", "/crops", "/plans/{plan_id}"} <= set(paths)
 
 
 def test_database_unavailable(client: TestClient) -> None:

@@ -22,8 +22,8 @@ services:
       DATABASE_URL: postgresql+psycopg://smoke:smoke-test-only@database:5432/smoke
       SECRET_KEY: disposable-smoke-test-secret-at-least-32-bytes
       FORWARDED_ALLOW_IPS: "*"
-    # This migration-on-start command is only for the disposable smoke database.
-    command: ["sh", "-c", "alembic -c backend/alembic.ini upgrade head && exec uvicorn backend.main:app --host 0.0.0.0 --port 8000"]
+    # This migrate-and-seed-on-start command is only for the disposable smoke database.
+    command: ["sh", "-c", "alembic -c backend/alembic.ini upgrade head && python -m backend.seed && exec uvicorn backend.main:app --host 0.0.0.0 --port 8000"]
     depends_on:
       database:
         condition: service_healthy

@@ -2,18 +2,20 @@ import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from backend.api.endpoints import auth, example, items, jobs
+from backend.api.endpoints import auth, catalog, gardens, plans
 from backend.core.config import get_settings
 from backend.core.database import engine, get_db
 from backend.core.rate_limit import limiter
+from backend.services.errors import DomainError
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +31,7 @@ def create_app() -> FastAPI:
     app = FastAPI(title=settings.app_name, debug=settings.debug, lifespan=lifespan)
     app.state.limiter = limiter
     app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+    app.add_exception_handler(DomainError, domain_error_handler)
     app.add_middleware(
         CORSMiddleware,
         allow_credentials=True,
@@ -36,12 +39,17 @@ def create_app() -> FastAPI:
         allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
         allow_headers=["Authorization", "Content-Type"],
     )
-    for router in (auth.router, example.router, items.router, jobs.router):
+    for router in (auth.router, catalog.router, gardens.router, plans.router):
         app.include_router(router)
     app.add_api_route("/", root, methods=["GET"])
     app.add_api_route("/health", health, methods=["GET"], tags=["Health"])
     app.add_api_route("/ready", ready, methods=["GET"], tags=["Health"])
     return app
+
+
+def domain_error_handler(request: Request, exc: Exception) -> JSONResponse:
+    assert isinstance(exc, DomainError)
+    return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
 
 
 def root() -> dict[str, str]:

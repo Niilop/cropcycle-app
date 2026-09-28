@@ -10,11 +10,12 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 class Settings(BaseSettings):
-    app_name: str = "FastAPI Template"
+    app_name: str = "CropCycle"
     debug: bool = False
     database_url: str
     secret_key: SecretStr
-    access_token_expire_minutes: int = Field(default=30, ge=1)
+    # Mobile clients keep the token on the device (D006); 30 days by default.
+    access_token_expire_minutes: int = Field(default=43200, ge=1)
     cors_origins: Annotated[list[str], NoDecode] = Field(default_factory=list)
 
     model_config = SettingsConfigDict(
