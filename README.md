@@ -38,7 +38,7 @@ make dev
 
 Open <http://localhost:5173> for the UI and <http://127.0.0.1:8000/docs> for the API. Registration requires a password of 12–128 characters and a username of 3–100 letters, digits, dots, underscores, or hyphens. Login uses form fields `username` and `password`; `username` can contain either the username or email.
 
-If another project uses the default ports, run `make dev BACKEND_PORT=18000 FRONTEND_PORT=15173`; the proxy follows the backend port. To run servers separately, use `make backend` and `make frontend` in separate terminals. All commands are listed by `make help`:
+If another project uses the default ports, run `make dev BACKEND_PORT=18000 FRONTEND_PORT=15173`; the proxy follows the backend port. To test the Expo app on a phone, run `make dev BACKEND_HOST=0.0.0.0` so devices on your network can reach the API (see [mobile/README.md](mobile/README.md)). To run servers separately, use `make backend` and `make frontend` in separate terminals. All commands are listed by `make help`:
 
 | Command | Purpose |
 | --- | --- |

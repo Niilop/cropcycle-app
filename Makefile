@@ -15,7 +15,7 @@ setup:
 	npm --prefix mobile ci
 
 dev:
-	uv run --no-sync python -m scripts.dev --backend-port $(BACKEND_PORT) --frontend-port $(FRONTEND_PORT)
+	uv run --no-sync python -m scripts.dev --backend-host $(BACKEND_HOST) --backend-port $(BACKEND_PORT) --frontend-port $(FRONTEND_PORT)
 
 backend:
 	uv run --no-sync uvicorn backend.main:app --reload --host $(BACKEND_HOST) --port $(BACKEND_PORT)

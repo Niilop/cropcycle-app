@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from scripts.dev import check_port
+from scripts.dev import check_port, server_commands
 from scripts.setup_env import initialize_env
 
 
@@ -35,6 +35,18 @@ def test_port_check_rejects_active_listener() -> None:
         port = server.getsockname()[1]
         with pytest.raises(RuntimeError, match=f"Port {port} is already in use"):
             check_port(port)
+
+
+def test_port_check_rejects_unknown_host() -> None:
+    with pytest.raises(RuntimeError, match="Cannot use host 'no-such-host.invalid'"):
+        check_port(0, "no-such-host.invalid")
+
+
+def test_dev_passes_backend_host_to_uvicorn() -> None:
+    backend, frontend = server_commands("0.0.0.0", 18000, 15173)
+    assert backend[backend.index("--host") + 1] == "0.0.0.0"
+    assert backend[backend.index("--port") + 1] == "18000"
+    assert frontend[-2:] == ["--port", "15173"]
 
 
 def test_setup_creates_private_env_and_preserves_existing(tmp_path: Path) -> None:

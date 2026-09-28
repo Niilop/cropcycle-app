@@ -12,17 +12,19 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def check_port(port: int) -> None:
+def check_port(port: int, host: str = "127.0.0.1") -> None:
     with socket.socket() as probe:
         # Match Uvicorn: TIME_WAIT connections must not block a server restart.
         probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:
-            probe.bind(("127.0.0.1", port))
+            probe.bind((host, port))
+        except socket.gaierror as exc:
+            raise RuntimeError(f"Cannot use host {host!r}. Use an IPv4 address.") from exc
         except OSError as exc:
             raise RuntimeError(f"Port {port} is already in use. Stop that server first.") from exc
 
 
-def preflight(backend_port: int, frontend_port: int) -> None:
+def preflight(backend_host: str, backend_port: int, frontend_port: int) -> None:
     from alembic.config import Config
     from alembic.runtime.migration import MigrationContext
     from alembic.script import ScriptDirectory
@@ -34,8 +36,8 @@ def preflight(backend_port: int, frontend_port: int) -> None:
         raise RuntimeError("Frontend dependencies are missing. Run make setup.")
     if backend_port == frontend_port:
         raise RuntimeError("Backend and frontend need different ports.")
-    for port in (backend_port, frontend_port):
-        check_port(port)
+    check_port(backend_port, backend_host)
+    check_port(frontend_port)
     try:
         settings = get_settings()
     except ValueError as exc:
@@ -56,6 +58,24 @@ def preflight(backend_port: int, frontend_port: int) -> None:
     finally:
         if engine is not None:
             engine.dispose()
+
+
+def server_commands(backend_host: str, backend_port: int, frontend_port: int) -> list[list[str]]:
+    """The uvicorn and Vite commands that make dev supervises."""
+    return [
+        [
+            sys.executable,
+            "-m",
+            "uvicorn",
+            "backend.main:app",
+            "--reload",
+            "--host",
+            backend_host,
+            "--port",
+            str(backend_port),
+        ],
+        ["npm", "--prefix", "frontend", "run", "dev", "--", "--port", str(frontend_port)],
+    ]
 
 
 def supervise(commands: list[list[str]], env: dict[str, str]) -> int:
@@ -102,6 +122,8 @@ def supervise(commands: list[list[str]], env: dict[str, str]) -> int:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    # 0.0.0.0 lets phones on your network reach the API (see mobile/README.md).
+    parser.add_argument("--backend-host", default="127.0.0.1")
     parser.add_argument("--backend-port", type=int, default=8000)
     parser.add_argument("--frontend-port", type=int, default=5173)
     args = parser.parse_args()
@@ -109,36 +131,15 @@ def main() -> int:
         parser.error("Ports must be between 1 and 65535.")
     os.chdir(ROOT)
     try:
-        preflight(args.backend_port, args.frontend_port)
+        preflight(args.backend_host, args.backend_port, args.frontend_port)
         print(
-            f"Starting API on http://127.0.0.1:{args.backend_port} "
+            f"Starting API on http://{args.backend_host}:{args.backend_port} "
             f"and UI on http://localhost:{args.frontend_port}",
             flush=True,
         )
         env = {**os.environ, "API_PROXY_TARGET": f"http://127.0.0.1:{args.backend_port}"}
         return supervise(
-            [
-                [
-                    sys.executable,
-                    "-m",
-                    "uvicorn",
-                    "backend.main:app",
-                    "--reload",
-                    "--port",
-                    str(args.backend_port),
-                ],
-                [
-                    "npm",
-                    "--prefix",
-                    "frontend",
-                    "run",
-                    "dev",
-                    "--",
-                    "--port",
-                    str(args.frontend_port),
-                ],
-            ],
-            env,
+            server_commands(args.backend_host, args.backend_port, args.frontend_port), env
         )
     except (RuntimeError, OSError) as exc:
         print(f"Development startup failed: {exc}", file=sys.stderr)

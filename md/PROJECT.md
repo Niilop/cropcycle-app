@@ -46,6 +46,10 @@ Out of scope for the MVP: mixed crops within one bed at the same time, graphical
 - Completing a plan copies its placements into planting history.
 - Crops that occupy a bed across the new year, such as autumn-planted garlic, must be modelled so that they reserve the bed during that time (D012).
 
+## Later: ease of use
+
+The end product must be extremely easy to use. The owner's first run on a phone (2026-09-28) found the Phase 3 app works but relies on too many menus and screens. That is accepted for the MVP. After it, redesign the main flows around fewer taps and less navigation.
+
 ## Later: crop data quality
 
 The seed catalogue is accepted as the MVP baseline. The owner wrote its values from general horticultural knowledge; they are not from a sourced database.

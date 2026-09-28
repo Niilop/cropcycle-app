@@ -17,7 +17,7 @@ The Expo app (`mobile/`, Phase 3) is on branch `feat/phase3-mobile`. It covers s
 
 ## Blockers and open questions
 
-There are no product blockers. Locally, Docker is unavailable in this WSL distro, so `make smoke` (Nginx) and the PostgreSQL 18 checks rely on CI; they pass for Phase 1. Git pushes over SSH need a passphrase prompt that non-interactive sessions can't show, so pushes use the `gh` token over HTTPS. Mobile native behaviour has not been checked on a device or emulator yet. The hosting provider and distribution channel remain open until Phase 5.
+There are no product blockers. Locally, Docker is unavailable in this WSL distro, so `make smoke` (Nginx) and the PostgreSQL 18 checks rely on CI; they pass for Phase 1. Git pushes over SSH need a passphrase prompt that non-interactive sessions can't show, so pushes use the `gh` token over HTTPS. The Phase 3 app has run on a phone through Expo Go over WSL mirrored networking (2026-09-28): sign-in and the basic functions work. The UI is menu-heavy; that is accepted for the MVP, and simplifying it is post-MVP work (see [PROJECT.md](PROJECT.md#later-ease-of-use)). The hosting provider and distribution channel remain open until Phase 5.
 
 ## Validation reference
 

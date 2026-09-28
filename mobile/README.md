@@ -40,8 +40,10 @@ The app then finds the API at `http://10.0.2.2:8000` automatically.
    networkingMode=mirrored
    ```
 
-3. Run `wsl --shutdown` in PowerShell, and allow ports 8081 and 8000 when Windows Firewall asks.
-4. Start the API so the network can reach it: `make backend BACKEND_HOST=0.0.0.0`. `make dev` only listens on this computer.
+   Notepad may save this as `.wslconfig.txt`, which WSL ignores. In File Explorer, turn on **View → Show → File name extensions** to check the name.
+
+3. Run `wsl --shutdown` in PowerShell, and allow ports 8081 and 8000 when Windows Firewall asks. After the restart, `make mobile` should show `Metro: exp://<your PC's Wi-Fi address>:8081`, not a `172.x` address.
+4. Start the API so the network can reach it: `make dev BACKEND_HOST=0.0.0.0` (or `make backend BACKEND_HOST=0.0.0.0` for the API alone). Without `BACKEND_HOST=0.0.0.0`, the API only listens on this computer and the app shows "cannot reach server". To check, open `http://<your PC's Wi-Fi address>:8000/docs` in the phone's browser.
 5. Scan the QR code with the Camera app (iPhone) or with Expo Go (Android).
 
 The iOS Simulator needs a Mac; on Windows, use Expo Go on an iPhone or iPad. Standalone builds come later through EAS (plan 002, Phase 5).
